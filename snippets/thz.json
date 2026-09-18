@@ -1,0 +1,172 @@
+{
+  "Função tipada": {
+    "prefix": "funcao",
+    "body": [
+      "funcao ${1:nome}(${2:parametro}: ${3:TIPO}) -> ${4:TIPO_RETORNO}:",
+      "    retorne ${5:expressao}"
+    ],
+    "description": "Função enxuta reutilizável com retorno tipado"
+  },
+  "Programa Enxuto": {
+    "prefix": "thz-enxuto",
+    "body": [
+      "programa ${1:Nome}:",
+      "    procedimento Principal():",
+      "        ${2:resultado} := ${3:expressao}",
+      "        exiba ${2:resultado}"
+    ],
+    "description": "Programa THZ-LANG na sintaxe canônica enxuta"
+  },
+  "Programa Canônico": {
+    "prefix": "thz-programa",
+    "body": [
+      "PROGRAMA ${1:NomeDoPrograma}",
+      "",
+      "METADADOS_ARQUITETURA",
+      "    DOMINIO: \"${2:Financeiro}\"",
+      "    SUBDOMINIO: \"${3:Faturamento}\"",
+      "    CAMADA: \"${4:Dominio}\"",
+      "    VERSAO: \"${5:1.0.0}\"",
+      "    AUTOR: \"${6:Engenharia}\"",
+      "    SLO_LATENCIA_MAXIMA: \"${7:50ms}\"",
+      "    CRITICIDADE: \"${8:ALTA}\"",
+      "FIM_METADADOS",
+      "",
+      "ESTRUTURA ${9:Entidade}",
+      "    id : TEXTO",
+      "    valor : DECIMAL(15,2)",
+      "FIM_ESTRUTURA",
+      "",
+      "REGRA_NEGOCIO ${10:RegraPrincipal}",
+      "    IDENTIFICADOR_REGRA: \"${11:BR-001}\"",
+      "    RASTREIO_REQUISITO: \"${12:REQ-001}\"",
+      "    DESCRICAO: \"${13:Calcula e valida entidade.}\"",
+      "",
+      "    CONTRATO_ENTRADA",
+      "        EXIGE e.valor >= 0.00",
+      "    FIM_CONTRATO_ENTRADA",
+      "",
+      "    OPERACAO ${14:Processar}(e : ${9:Entidade}) : LOGICO",
+      "    INICIO",
+      "        EXIBA \"Processando entidade: \" + e.id",
+      "        RETORNE VERDADEIRO",
+      "    FIM",
+      "FIM_REGRA_NEGOCIO",
+      "",
+      "PROCEDIMENTO Principal()",
+      "INICIO",
+      "    VARIAVEL item : ${9:Entidade} <- CRIAR ${9:Entidade}(id: \"ITEM-001\", valor: 1500.00)",
+      "    VARIAVEL ok : LOGICO <- ${10:RegraPrincipal}.${14:Processar}(item)",
+      "    EXIBA \"Resultado da execução: \" + ok",
+      "FIM",
+      "",
+      "FIM_PROGRAMA"
+    ],
+    "description": "Cria um programa canônico completo em THZ-LANG com metadados, estrutura, regra de negócio e procedimento principal."
+  },
+  "Regra de Negócio": {
+    "prefix": "thz-regra",
+    "body": [
+      "REGRA_NEGOCIO ${1:NomeDaRegra}",
+      "    IDENTIFICADOR_REGRA: \"${2:BR-001}\"",
+      "    RASTREIO_REQUISITO: \"${3:REQ-001}\"",
+      "    DESCRICAO: \"${4:Descrição da regra de negócio.}\"",
+      "",
+      "    CONTRATO_ENTRADA",
+      "        EXIGE ${5:parametro} > 0",
+      "    FIM_CONTRATO_ENTRADA",
+      "",
+      "    OPERACAO ${6:Executar}(${5:parametro} : ${7:INTEIRO32}) : ${8:INTEIRO32}",
+      "    INICIO",
+      "        $0",
+      "        RETORNE ${5:parametro}",
+      "    FIM",
+      "FIM_REGRA_NEGOCIO"
+    ],
+    "description": "Cria uma regra de negócio (DDD) com identificador, rastreabilidade de requisito, contrato de entrada e operação."
+  },
+  "Estrutura de Dados": {
+    "prefix": "thz-estrutura",
+    "body": [
+      "ESTRUTURA ${1:NomeDaEstrutura}",
+      "    ${2:campo1} : ${3:TEXTO}",
+      "    ${4:campo2} : ${5:DECIMAL(12,2)}",
+      "FIM_ESTRUTURA"
+    ],
+    "description": "Declaração de estrutura de dados tipada."
+  },
+  "Estrutura Colunar (SIMD / SoA)": {
+    "prefix": "thz-estrutura-colunar",
+    "body": [
+      "ESTRUTURA ${1:LoteFinanceiro} LAYOUT_COLUNAR",
+      "    ${2:ids} : TEXTO[]",
+      "    ${3:valores} : DECIMAL(15,2)[]",
+      "    ${4:taxas} : DECIMAL(5,4)[]",
+      "FIM_ESTRUTURA"
+    ],
+    "description": "Declaração de estrutura com layout colunar (Structure-of-Arrays) para vetorização SIMD."
+  },
+  "Bloco de Memória & SIMD": {
+    "prefix": "thz-simd-arena",
+    "body": [
+      "USAR_BLOCO_MEMORIA(${1:1024})",
+      "    VETORIZAR_PARA ${2:i} DE 0 ATE ${3:total} - 1 PASSO 1",
+      "        $0",
+      "    FIM_VETORIZAR",
+      "FIM_BLOCO"
+    ],
+    "description": "Bloco de alocação em arena de alta performance com loop vetorizado SIMD."
+  },
+  "Procedimento": {
+    "prefix": "thz-procedimento",
+    "body": [
+      "PROCEDIMENTO ${1:NomeProcedimento}(${2:params})",
+      "INICIO",
+      "    $0",
+      "FIM"
+    ],
+    "description": "Declaração de procedimento."
+  },
+  "Programa Visual": {
+    "prefix": "thz-tela-visual",
+    "body": [
+      "PROGRAMA VISUAL ${1:PainelFinanceiro}",
+      "",
+      "METADADOS_ARQUITETURA",
+      "    DOMINIO: \"${2:Financeiro}\"",
+      "    CAMADA: \"${3:Apresentacao}\"",
+      "    VERSAO: \"1.0.0\"",
+      "FIM_METADADOS",
+      "",
+      "ESTRUTURA FormularioEntrada",
+      "    codigo : TEXTO",
+      "    valor : DECIMAL(12,2)",
+      "FIM_ESTRUTURA",
+      "",
+      "PROCEDIMENTO Principal()",
+      "INICIO",
+      "    EXIBA \"Inicializando interface declarativa: \" + \"${1:PainelFinanceiro}\"",
+      "FIM",
+      "",
+      "FIM_PROGRAMA"
+    ],
+    "description": "Cria um módulo de programa visual declarativo."
+  },
+  "Biblioteca": {
+    "prefix": "thz-biblioteca",
+    "body": [
+      "BIBLIOTECA ${1:NomeDaBiblioteca}",
+      "",
+      "METADADOS_ARQUITETURA",
+      "    DOMINIO: \"${2:Compartilhado}\"",
+      "    CAMADA: \"${3:Core}\"",
+      "    VERSAO: \"1.0.0\"",
+      "FIM_METADADOS",
+      "",
+      "$0",
+      "",
+      "FIM_BIBLIOTECA"
+    ],
+    "description": "Cria um módulo de biblioteca compartilhada em THZ-LANG."
+  }
+}

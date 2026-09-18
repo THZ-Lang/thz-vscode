@@ -1,0 +1,30 @@
+{
+  "comments": {
+    "lineComment": "#",
+    "blockComment": ["/*", "*/"]
+  },
+  "brackets": [
+    ["(", ")"],
+    ["[", "]"]
+  ],
+  "autoClosingPairs": [
+    { "open": "\"", "close": "\"" },
+    { "open": "(", "close": ")" },
+    { "open": "[", "close": "]" }
+  ],
+  "surroundingPairs": [
+    ["\"", "\""],
+    ["(", ")"],
+    ["[", "]"]
+  ],
+  "indentationRules": {
+    "increaseIndentPattern": "^\\s*(?:programa|biblioteca|extensao|pipeline_dados|ferramenta|teste|tela|metadados(?:_arquitetura)?|estrutura|enumeracao|regra(?:_negocio)?|funcao|função|operacao|procedimento|se|senao|senão|enquanto|para|tente|capture|escolha|caso|usar_bloco_memoria|vetorizar_para)\\b.*:\\s*(?:#.*)?$",
+    "decreaseIndentPattern": "^\\s*(?:senao|senão|capture)\\b.*:\\s*(?:#.*)?$"
+  },
+  "onEnterRules": [
+    {
+      "beforeText": "^\\s*.*:\\s*(?:#.*)?$",
+      "action": { "indentAction": "Indent" }
+    }
+  ]
+}
