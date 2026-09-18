@@ -1,4 +1,4 @@
-﻿import * as fs from 'fs';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import {
@@ -57,7 +57,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
   if (!jarPath) {
     vscode.window.showWarningMessage(
-      'THZ-LANG: Servidor LSP Java nÃ£o foi encontrado. Execute "./gradlew :thz-lsp-jvm:jar" para compilÃ¡-lo.'
+      'THZ-LANG: Servidor LSP Java não foi encontrado. Execute "./gradlew :thz-lsp-jvm:jar" para compilá-lo.'
     );
     jarPath = candidatos[candidatos.length - 1];
   }
@@ -206,7 +206,7 @@ export function activate(context: vscode.ExtensionContext): void {
     thzTerminal.sendText(comando);
   }
 
-  // Comandos de ExecuÃ§Ã£o
+  // Comandos de Execução
   context.subscriptions.push(
     vscode.commands.registerCommand('thz.run', () => executarNoTerminal('run')),
     vscode.commands.registerCommand('thz.check', () => executarNoTerminal('check')),
@@ -245,7 +245,7 @@ export function activate(context: vscode.ExtensionContext): void {
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
 
-        // Regra de NegÃ³cio
+        // Regra de Negócio
         const matchRegra = line.match(/^\s*REGRA_NEGOCIO\s+([A-Za-z0-9_]+)/);
         if (matchRegra) {
           const nomeRegra = matchRegra[1];
@@ -257,7 +257,7 @@ export function activate(context: vscode.ExtensionContext): void {
               arguments: [nomeRegra],
             }),
             new vscode.CodeLens(range, {
-              title: 'ðŸ›¡ï¸ Auditar GovernanÃ§a',
+              title: 'ðŸ›¡ï¸ Auditar Governança',
               command: 'thz.showAudit',
             }),
             new vscode.CodeLens(range, {
@@ -267,14 +267,14 @@ export function activate(context: vscode.ExtensionContext): void {
           );
         }
 
-        // OperaÃ§Ã£o isolada
+        // Operação isolada
         const matchOp = line.match(/^\s*OPERACAO\s+([A-Za-z0-9_]+)/);
         if (matchOp) {
           const nomeOp = matchOp[1];
           const range = new vscode.Range(i, 0, i, line.length);
           lenses.push(
             new vscode.CodeLens(range, {
-              title: `â–¶ Executar OperaÃ§Ã£o: ${nomeOp}()`,
+              title: `â–¶ Executar Operação: ${nomeOp}()`,
               command: 'thz.runTarget',
               arguments: [nomeOp],
             })
@@ -368,7 +368,7 @@ export function activate(context: vscode.ExtensionContext): void {
       nomeModulo = matchMod[2];
     }
 
-    let dominio = 'Geral', subdominio = 'Principal', camada = 'DomÃ­nio', slo = 'N/A', autor = 'NÃ£o especificado', criticidade = 'MÃ©dia', versao = '1.0.0', conformidade = 'Nenhuma';
+    let dominio = 'Geral', subdominio = 'Principal', camada = 'Domínio', slo = 'N/A', autor = 'Não especificado', criticidade = 'Média', versao = '1.0.0', conformidade = 'Nenhuma';
     const matchDom = fonte.match(/DOMINIO\s*:\s*"([^"]+)"/);
     if (matchDom) dominio = matchDom[1];
     const matchSubDom = fonte.match(/SUBDOMINIO\s*:\s*"([^"]+)"/);
@@ -563,7 +563,7 @@ export function activate(context: vscode.ExtensionContext): void {
     const pipes = elementos.filter(e => e.tipo === 'PIPELINE');
     const procs = elementos.filter(e => e.tipo === 'PROCEDIMENTO');
 
-    // 1. Diagrama Geral (HierÃ¡rquico com classes de estilo de alto contraste)
+    // 1. Diagrama Geral (Hierárquico com classes de estilo de alto contraste)
     let diagGeral = 'graph TD\n';
     diagGeral += '    classDef entity fill:#1e3a8a,stroke:#60a5fa,stroke-width:2px,color:#eff6ff;\n';
     diagGeral += '    classDef rule fill:#064e3b,stroke:#34d399,stroke-width:2px,color:#ecfdf5;\n';
@@ -585,7 +585,7 @@ export function activate(context: vscode.ExtensionContext): void {
     }
 
     if (regras.length > 0) {
-      diagGeral += `        subgraph RegrasDDD ["ðŸ›¡ï¸ Regras de NegÃ³cio e Contratos"]\n`;
+      diagGeral += `        subgraph RegrasDDD ["ðŸ›¡ï¸ Regras de Negócio e Contratos"]\n`;
       for (const r of regras) {
         const idLabel = r.detalhes.idRegra ? `(${r.detalhes.idRegra}) ` : '';
         const idempIcon = r.detalhes.idempotente ? ' ðŸ›¡ï¸' : '';
@@ -599,7 +599,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
         if (r.detalhes.preCondicoes && r.detalhes.preCondicoes.length > 0) {
           const preId = sanitizarId('PRE_' + r.nome);
-          diagGeral += `            ${preId}["ðŸ›¡ï¸ EXIGE: ${r.detalhes.preCondicoes.length} clÃ¡usula(s)"] -.-> ${r.id}\n`;
+          diagGeral += `            ${preId}["ðŸ›¡ï¸ EXIGE: ${r.detalhes.preCondicoes.length} cláusula(s)"] -.-> ${r.id}\n`;
         }
 
         if (r.detalhes.operacoes) {
@@ -612,7 +612,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
         if (r.detalhes.posCondicoes && r.detalhes.posCondicoes.length > 0) {
           const posId = sanitizarId('POS_' + r.nome);
-          diagGeral += `            ${r.id} -.-> ${posId}["âœ… GARANTE: ${r.detalhes.posCondicoes.length} clÃ¡usula(s)"]\n`;
+          diagGeral += `            ${r.id} -.-> ${posId}["âœ… GARANTE: ${r.detalhes.posCondicoes.length} cláusula(s)"]\n`;
         }
       }
       diagGeral += `        end\n`;
@@ -695,7 +695,7 @@ export function activate(context: vscode.ExtensionContext): void {
       if (r.detalhes.operacoes) {
         for (const op of r.detalhes.operacoes) {
           const opId = sanitizarId(`OP_${r.nome}_${op.nome}`);
-          diagRegras += `    ${r.id} ==> ${opId}["âš¡ OperaÃ§Ã£o: ${escaparMermaidTexto(op.nome)}()"]\n`;
+          diagRegras += `    ${r.id} ==> ${opId}["âš¡ Operação: ${escaparMermaidTexto(op.nome)}()"]\n`;
           diagRegras += `    class ${opId} op;\n`;
         }
       }
@@ -716,7 +716,7 @@ export function activate(context: vscode.ExtensionContext): void {
     diagFluxo += '    classDef proc fill:#1e3a8a,stroke:#60a5fa,stroke-width:2px,color:#eff6ff;\n';
     for (const p of pipes) {
       const org = p.detalhes.origemPipeline ? escaparMermaidTexto(p.detalhes.origemPipeline) : 'Entrada';
-      const dst = p.detalhes.destinoPipeline ? escaparMermaidTexto(p.detalhes.destinoPipeline) : 'SaÃ­da';
+      const dst = p.detalhes.destinoPipeline ? escaparMermaidTexto(p.detalhes.destinoPipeline) : 'Saída';
       diagFluxo += `    ${p.id}_IN["ðŸ“¥ Fonte: ${org}"] --> ${p.id}["ðŸ”„ Pipeline: ${escaparMermaidTexto(p.nome)}"] --> ${p.id}_OUT["ðŸ“¤ Destino: ${dst}"]\n`;
       diagFluxo += `    class ${p.id} pipe;\n`;
     }
@@ -756,7 +756,7 @@ export function activate(context: vscode.ExtensionContext): void {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>THZ Living Architecture â€” ${dados.nomeModulo}</title>
+  <title>THZ Living Architecture — ${dados.nomeModulo}</title>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <style>
     :root {
@@ -807,7 +807,7 @@ export function activate(context: vscode.ExtensionContext): void {
     .meta-card .val { font-size: 0.88rem; font-weight: 600; margin-top: 1px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .meta-card .val.highlight { color: var(--highlight); }
 
-    /* Barra de NavegaÃ§Ã£o de VisualizaÃ§Ãµes & Busca */
+    /* Barra de Navegação de Visualizações & Busca */
     .controls-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; background: var(--card-bg); padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border); }
     .tabs { display: flex; gap: 4px; overflow-x: auto; }
     .tab-btn { background: transparent; border: none; color: var(--muted); padding: 5px 10px; border-radius: 5px; font-size: 0.78rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.15s ease; }
@@ -846,7 +846,7 @@ export function activate(context: vscode.ExtensionContext): void {
     .drawer-section { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 0.82rem; }
     .drawer-section h4 { font-size: 0.75rem; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
 
-    /* Modo Ãrvore AcessÃ­vel (Screen Reader / Outline) */
+    /* Modo Árvore Acessível (Screen Reader / Outline) */
     .accessible-tree { display: none; width: 100%; height: 100%; overflow-y: auto; padding: 16px; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border); }
     .accessible-tree.active { display: block; }
     .tree-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 10px; }
@@ -854,7 +854,7 @@ export function activate(context: vscode.ExtensionContext): void {
     .tree-card h3 { font-size: 0.95rem; color: var(--accent); display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
     .tree-card ul { list-style: square inside; margin-top: 4px; font-size: 0.82rem; color: var(--text); }
 
-    /* RodapÃ© com Atalhos de Teclado */
+    /* Rodapé com Atalhos de Teclado */
     footer { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 0.72rem; color: var(--muted); }
     .kbd { background: var(--border); padding: 1px 5px; border-radius: 4px; font-family: monospace; font-size: 0.7rem; border: 1px solid var(--muted); }
   </style>
@@ -864,24 +864,24 @@ export function activate(context: vscode.ExtensionContext): void {
     <div class="header-info">
       <h1>
         <span class="status-dot" aria-hidden="true"></span>
-        ðŸ“ THZ-LANG â€” Arquitetura Viva & DDD
+        ðŸ“ THZ-LANG — Arquitetura Viva & DDD
         <span class="badge">${dados.tipoModulo}</span>
       </h1>
-      <p>MÃ³dulo: <strong>${dados.nomeModulo}</strong> | VersÃ£o: ${dados.versao} | Conformidade: <strong>${dados.conformidade}</strong></p>
+      <p>Módulo: <strong>${dados.nomeModulo}</strong> | Versão: ${dados.versao} | Conformidade: <strong>${dados.conformidade}</strong></p>
     </div>
-    <div class="header-actions" role="toolbar" aria-label="AÃ§Ãµes de VisualizaÃ§Ã£o">
+    <div class="header-actions" role="toolbar" aria-label="Ações de Visualização">
       <button class="btn" id="btnHighContrast" aria-pressed="false" title="Alternar Alto Contraste (WCAG AAA)">ðŸŒ“ Alto Contraste</button>
-      <button class="btn" id="btnCopyMermaid" title="Copiar cÃ³digo Mermaid">ðŸ“‹ Mermaid</button>
-      <button class="btn" id="btnCopyMd" title="Copiar especificaÃ§Ã£o em Markdown">ðŸ“ Markdown</button>
+      <button class="btn" id="btnCopyMermaid" title="Copiar código Mermaid">ðŸ“‹ Mermaid</button>
+      <button class="btn" id="btnCopyMd" title="Copiar especificação em Markdown">ðŸ“ Markdown</button>
       <button class="btn btn-primary" id="btnDownloadSvg" title="Baixar diagrama SVG">ðŸ’¾ Baixar SVG</button>
     </div>
   </header>
 
   <section class="meta-grid" aria-label="Metadados Arquiteturais ISO 42010">
-    <div class="meta-card"><div class="label">DomÃ­nio</div><div class="val">${dados.dominio}</div></div>
-    <div class="meta-card"><div class="label">SubdomÃ­nio</div><div class="val">${dados.subdominio}</div></div>
+    <div class="meta-card"><div class="label">Domínio</div><div class="val">${dados.dominio}</div></div>
+    <div class="meta-card"><div class="label">Subdomínio</div><div class="val">${dados.subdominio}</div></div>
     <div class="meta-card"><div class="label">Camada</div><div class="val">${dados.camada}</div></div>
-    <div class="meta-card"><div class="label">SLO MÃ¡ximo</div><div class="val highlight">${dados.slo}</div></div>
+    <div class="meta-card"><div class="label">SLO Máximo</div><div class="val highlight">${dados.slo}</div></div>
     <div class="meta-card"><div class="label">Criticidade</div><div class="val">${dados.criticidade}</div></div>
     <div class="meta-card"><div class="label">Autor / Time</div><div class="val">${dados.autor}</div></div>
   </section>
@@ -892,7 +892,7 @@ export function activate(context: vscode.ExtensionContext): void {
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="entidades">ðŸ“¦ Entidades (${dados.elementos.filter(e => e.tipo === 'ESTRUTURA').length})</button>
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="regras">ðŸ›¡ï¸ Regras DDD (${dados.elementos.filter(e => e.tipo === 'REGRA').length})</button>
       <button class="tab-btn" role="tab" aria-selected="false" data-tab="fluxo">ðŸš€ Pipelines & Fluxo</button>
-      <button class="tab-btn" role="tab" aria-selected="false" data-tab="acessivel">ðŸ“‘ Ãrvore SemÃ¢ntica (A11y)</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="acessivel">ðŸ“‘ Árvore Semântica (A11y)</button>
     </div>
     <div class="search-box" role="search">
       <span aria-hidden="true">ðŸ”</span>
@@ -902,21 +902,21 @@ export function activate(context: vscode.ExtensionContext): void {
   </nav>
 
   <!-- Viewport Interativo do Diagrama -->
-  <main class="viewport-container" id="viewport" tabindex="0" role="region" aria-label="Visualizador Interativo de Diagramas (Arraste para mover, use roda do mouse ou botÃµes para zoom)">
+  <main class="viewport-container" id="viewport" tabindex="0" role="region" aria-label="Visualizador Interativo de Diagramas (Arraste para mover, use roda do mouse ou botões para zoom)">
     <div id="canvas"></div>
 
-    <!-- HUD de NavegaÃ§Ã£o AcessÃ­vel -->
-    <div class="hud-controls" role="toolbar" aria-label="NavegaÃ§Ã£o e Zoom do Diagrama">
+    <!-- HUD de Navegação Acessível -->
+    <div class="hud-controls" role="toolbar" aria-label="Navegação e Zoom do Diagrama">
       <button class="hud-btn" id="btnZoomIn" title="Aumentar Zoom ( + )" aria-label="Aumentar Zoom">ï¼‹</button>
       <button class="hud-btn" id="btnZoomOut" title="Diminuir Zoom ( - )" aria-label="Diminuir Zoom">ï¼</button>
       <button class="hud-btn" id="btnResetZoom" title="Tamanho Real 100% ( 0 )" aria-label="Tamanho 100%">1:1</button>
-      <button class="hud-btn" id="btnFitScreen" title="Ajustar Ã  Tela ( F )" aria-label="Ajustar Ã  Tela">â›¶</button>
-      <button class="hud-btn" id="btnCenter" title="Centralizar PosiÃ§Ã£o" aria-label="Centralizar PosiÃ§Ã£o">âŸ²</button>
+      <button class="hud-btn" id="btnFitScreen" title="Ajustar à Tela ( F )" aria-label="Ajustar à Tela">â›¶</button>
+      <button class="hud-btn" id="btnCenter" title="Centralizar Posição" aria-label="Centralizar Posição">âŸ²</button>
     </div>
 
-    <!-- Ãrvore AcessÃ­vel Textual -->
-    <div class="accessible-tree" id="accessibleTree" role="tabpanel" aria-label="VisualizaÃ§Ã£o em Ãrvore AcessÃ­vel">
-      <h2 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--accent);">ðŸ“‹ Estrutura SemÃ¢ntica e Rastreabilidade Completa</h2>
+    <!-- Árvore Acessível Textual -->
+    <div class="accessible-tree" id="accessibleTree" role="tabpanel" aria-label="Visualização em Árvore Acessível">
+      <h2 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--accent);">ðŸ“‹ Estrutura Semântica e Rastreabilidade Completa</h2>
       ${dados.elementos.map(el => `
         <article class="tree-card" tabindex="0">
           <h3>
@@ -932,7 +932,7 @@ export function activate(context: vscode.ExtensionContext): void {
               <ul>${el.detalhes.campos.map(c => `<li><code>${c.nome}: ${c.tipo}</code></li>`).join('')}</ul>
             </div>` : ''}
           ${el.detalhes.invariantes && el.detalhes.invariantes.length > 0 ? `
-            <div style="margin-top:6px; color:#f43f5e;"><strong>Invariantes de DomÃ­nio:</strong>
+            <div style="margin-top:6px; color:#f43f5e;"><strong>Invariantes de Domínio:</strong>
               <ul>${el.detalhes.invariantes.map(inv => `<li><code>INVARIANTE ${inv}</code></li>`).join('')}</ul>
             </div>` : ''}
           ${el.detalhes.preCondicoes && el.detalhes.preCondicoes.length > 0 ? `
@@ -940,10 +940,10 @@ export function activate(context: vscode.ExtensionContext): void {
               <ul>${el.detalhes.preCondicoes.map(ex => `<li><code>EXIGE ${ex}</code></li>`).join('')}</ul>
             </div>` : ''}
           ${el.detalhes.posCondicoes && el.detalhes.posCondicoes.length > 0 ? `
-            <div style="margin-top:6px; color:#34d399;"><strong>Contrato de SaÃ­da (GARANTE):</strong>
+            <div style="margin-top:6px; color:#34d399;"><strong>Contrato de Saída (GARANTE):</strong>
               <ul>${el.detalhes.posCondicoes.map(ga => `<li><code>GARANTE ${ga}</code></li>`).join('')}</ul>
             </div>` : ''}
-          ${el.linha ? `<button class="btn" style="margin-top:8px;" onclick="irParaLinha(${el.linha})">ðŸŽ¯ Ir para o CÃ³digo-Fonte (Linha ${el.linha})</button>` : ''}
+          ${el.linha ? `<button class="btn" style="margin-top:8px;" onclick="irParaLinha(${el.linha})">ðŸŽ¯ Ir para o Código-Fonte (Linha ${el.linha})</button>` : ''}
         </article>
       `).join('')}
     </div>
@@ -1003,14 +1003,14 @@ export function activate(context: vscode.ExtensionContext): void {
         console.error('Erro ao renderizar diagrama Mermaid:', err);
         canvas.innerHTML = '<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px; text-align:center; color:#f87171;">' +
           '<div style="font-size:2.5rem; margin-bottom:12px;">âš ï¸</div>' +
-          '<h3 style="font-size:1.1rem; color:#fca5a5; margin-bottom:8px;">NÃ£o foi possÃ­vel renderizar o diagrama</h3>' +
+          '<h3 style="font-size:1.1rem; color:#fca5a5; margin-bottom:8px;">Não foi possível renderizar o diagrama</h3>' +
           '<p style="font-size:0.82rem; color:var(--muted); max-width:480px; margin-bottom:16px; font-family:monospace; background:rgba(0,0,0,0.3); padding:10px; border-radius:6px; border:1px solid var(--border);">' + (err.message || err) + '</p>' +
-          '<button class="btn" id="btnCopiarMermaidFalha">ðŸ“‹ Copiar CÃ³digo Mermaid</button>' +
+          '<button class="btn" id="btnCopiarMermaidFalha">ðŸ“‹ Copiar Código Mermaid</button>' +
         '</div>';
         const btnFalha = document.getElementById('btnCopiarMermaidFalha');
         if (btnFalha) {
           btnFalha.addEventListener('click', () => {
-            vscode.postMessage({ command: 'copyToClipboard', text: diagramSrc, feedback: 'CÃ³digo Mermaid copiado!' });
+            vscode.postMessage({ command: 'copyToClipboard', text: diagramSrc, feedback: 'Código Mermaid copiado!' });
           });
         }
       }
@@ -1093,7 +1093,7 @@ export function activate(context: vscode.ExtensionContext): void {
     document.getElementById('btnFitScreen').addEventListener('click', fitToScreen);
     document.getElementById('btnCenter').addEventListener('click', resetView);
 
-    // Alternar VisualizaÃ§Ãµes (Tabs)
+    // Alternar Visualizações (Tabs)
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', async () => {
         document.querySelectorAll('.tab-btn').forEach(b => {
@@ -1121,7 +1121,7 @@ export function activate(context: vscode.ExtensionContext): void {
       });
     });
 
-    // Clique em NÃ³s do Diagrama -> Abrir Drawer de Detalhes
+    // Clique em Nós do Diagrama -> Abrir Drawer de Detalhes
     function atribuirEventosNos() {
       const nodes = canvas.querySelectorAll('.node');
       nodes.forEach(node => {
@@ -1158,7 +1158,7 @@ export function activate(context: vscode.ExtensionContext): void {
         html += '<div class="drawer-section"><h4>âš–ï¸ Identificador da Regra</h4><p><code>' + el.detalhes.idRegra + '</code></p></div>';
       }
       if (el.detalhes.idempotente) {
-        html += '<div class="drawer-section"><h4>ðŸ›¡ï¸ Garantia de IdempotÃªncia</h4><p>Sim â€” OperaÃ§Ã£o com tolerÃ¢ncia total a repetiÃ§Ãµes sem efeitos colaterais.</p></div>';
+        html += '<div class="drawer-section"><h4>ðŸ›¡ï¸ Garantia de Idempotência</h4><p>Sim — Operação com tolerância total a repetições sem efeitos colaterais.</p></div>';
       }
       if (el.detalhes.campos && el.detalhes.campos.length > 0) {
         html += '<div class="drawer-section"><h4>ðŸ“¦ Campos da Estrutura</h4><ul>';
@@ -1171,17 +1171,17 @@ export function activate(context: vscode.ExtensionContext): void {
         html += '</ul></div>';
       }
       if (el.detalhes.preCondicoes && el.detalhes.preCondicoes.length > 0) {
-        html += '<div class="drawer-section" style="border-left:3px solid #a78bfa;"><h4>ðŸ›¡ï¸ PrÃ©-CondiÃ§Ãµes (EXIGE)</h4><ul>';
+        html += '<div class="drawer-section" style="border-left:3px solid #a78bfa;"><h4>ðŸ›¡ï¸ Pré-Condições (EXIGE)</h4><ul>';
         el.detalhes.preCondicoes.forEach(ex => { html += '<li><code>EXIGE ' + ex + '</code></li>'; });
         html += '</ul></div>';
       }
       if (el.detalhes.posCondicoes && el.detalhes.posCondicoes.length > 0) {
-        html += '<div class="drawer-section" style="border-left:3px solid #34d399;"><h4>âœ… PÃ³s-CondiÃ§Ãµes (GARANTE)</h4><ul>';
+        html += '<div class="drawer-section" style="border-left:3px solid #34d399;"><h4>âœ… Pós-Condições (GARANTE)</h4><ul>';
         el.detalhes.posCondicoes.forEach(ga => { html += '<li><code>GARANTE ' + ga + '</code></li>'; });
         html += '</ul></div>';
       }
       if (el.detalhes.operacoes && el.detalhes.operacoes.length > 0) {
-        html += '<div class="drawer-section"><h4>âš¡ OperaÃ§Ãµes</h4><ul>';
+        html += '<div class="drawer-section"><h4>âš¡ Operações</h4><ul>';
         el.detalhes.operacoes.forEach(op => {
           html += '<li><code>' + (op.idempotente ? 'IDEMPOTENTE ' : '') + op.nome + '(' + op.params + ')' + (op.retorno ? ' : ' + op.retorno : '') + '</code></li>';
         });
@@ -1245,8 +1245,8 @@ export function activate(context: vscode.ExtensionContext): void {
 
     // Copiar Markdown
     document.getElementById('btnCopyMd').addEventListener('click', () => {
-      let md = '# Arquitetura Viva â€” ' + DADOS_ARQUITETURA.nomeModulo + '\n\n';
-      md += '> **DomÃ­nio:** ' + DADOS_ARQUITETURA.dominio + ' | **Camada:** ' + DADOS_ARQUITETURA.camada + ' | **SLO:** ' + DADOS_ARQUITETURA.slo + '\n\n';
+      let md = '# Arquitetura Viva — ' + DADOS_ARQUITETURA.nomeModulo + '\n\n';
+      md += '> **Domínio:** ' + DADOS_ARQUITETURA.dominio + ' | **Camada:** ' + DADOS_ARQUITETURA.camada + ' | **SLO:** ' + DADOS_ARQUITETURA.slo + '\n\n';
       md += '\`\`\`mermaid\n' + (DADOS_ARQUITETURA.diagramas[tabAtual] || DADOS_ARQUITETURA.diagramas.geral) + '\n\`\`\`\n';
       vscode.postMessage({ command: 'copyToClipboard', text: md, feedback: 'Markdown Arquitetural copiado com sucesso!' });
     });
@@ -1291,7 +1291,7 @@ export function activate(context: vscode.ExtensionContext): void {
       }
     });
 
-    // InicializaÃ§Ã£o
+    // Inicialização
     setTimeout(async () => {
       await renderizarDiagrama(DADOS_ARQUITETURA.diagramas.geral);
     }, 100);
@@ -1321,7 +1321,7 @@ export function activate(context: vscode.ExtensionContext): void {
           architecturePanel = undefined;
         });
 
-        // Receptor de Mensagens do Webview (NavegaÃ§Ã£o ao cÃ³digo, cÃ³pia, etc)
+        // Receptor de Mensagens do Webview (Navegação ao código, cópia, etc)
         architecturePanel.webview.onDidReceiveMessage(message => {
           if (message.command === 'goToLine') {
             const linha = message.line;
@@ -1344,7 +1344,7 @@ export function activate(context: vscode.ExtensionContext): void {
     })
   );
 
-  // AtualizaÃ§Ã£o com debounce do Live Preview de Arquitetura
+  // Atualização com debounce do Live Preview de Arquitetura
   let timerAtualizacaoPreview: NodeJS.Timeout | undefined;
   vscode.workspace.onDidChangeTextDocument(e => {
     if (architecturePanel && e.document === vscode.window.activeTextEditor?.document && e.document.languageId === 'thz') {
@@ -1433,7 +1433,7 @@ export function activate(context: vscode.ExtensionContext): void {
       <div class="btn-group">
         ${botoes.length > 0 ? botoes.map((b, idx) => `
           <button class="btn ${idx === 0 ? 'btn-primary' : 'btn-secondary'}" onclick="registrarClique('${b}')">â–¶ ${b}</button>
-        `).join('') : '<button class="btn btn-primary">â–¶ Executar AÃ§Ã£o</button>'}
+        `).join('') : '<button class="btn btn-primary">â–¶ Executar Ação</button>'}
       </div>
     </div>
   </div>
@@ -1480,7 +1480,7 @@ export function activate(context: vscode.ExtensionContext): void {
   });
 
   // ==========================================================================
-  // 5. COCKPIT THZ â€” SUÃTE DE COMANDO & ARQUITETURA VIVA (ACTIVITY BAR)
+  // 5. COCKPIT THZ — SUÍTE DE COMANDO & ARQUITETURA VIVA (ACTIVITY BAR)
   // ==========================================================================
 
   class ThzCockpitItem extends vscode.TreeItem {
@@ -1505,7 +1505,7 @@ export function activate(context: vscode.ExtensionContext): void {
     }
   }
 
-  // 5.1 Provider de AÃ§Ãµes RÃ¡pidas do Cockpit
+  // 5.1 Provider de Ações Rápidas do Cockpit
   class ThzCockpitActionsProvider implements vscode.TreeDataProvider<ThzCockpitItem> {
     private _onDidChangeTreeData = new vscode.EventEmitter<ThzCockpitItem | undefined | null | void>();
     readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
@@ -1531,12 +1531,12 @@ export function activate(context: vscode.ExtensionContext): void {
           'Executa o arquivo .thz ativo no terminal integrado'
         ),
         new ThzCockpitItem(
-          'Verificar CÃ³digo & Contratos',
+          'Verificar Código & Contratos',
           vscode.TreeItemCollapsibleState.None,
           'thz check',
           'check',
-          { command: 'thz.check', title: 'Verificar CÃ³digo' },
-          'Executa anÃ¡lise sintÃ¡tica, semÃ¢ntica e verificaÃ§Ã£o formal de contratos'
+          { command: 'thz.check', title: 'Verificar Código' },
+          'Executa análise sintática, semântica e verificação formal de contratos'
         ),
         new ThzCockpitItem(
           'Live Preview de Arquitetura Viva',
@@ -1552,23 +1552,23 @@ export function activate(context: vscode.ExtensionContext): void {
           '.thzui / GUI',
           'browser',
           { command: 'thz.previewUi', title: 'Live Preview de Tela' },
-          'Abre prÃ©-visualizaÃ§Ã£o em tempo real de interfaces declarativas'
+          'Abre pré-visualização em tempo real de interfaces declarativas'
         ),
         new ThzCockpitItem(
-          'Auditoria de GovernanÃ§a',
+          'Auditoria de Governança',
           vscode.TreeItemCollapsibleState.None,
           'ISO 42010 / SOX',
           'shield',
-          { command: 'thz.showAudit', title: 'Auditoria de GovernanÃ§a' },
-          'Gera relatÃ³rio completo de rastreabilidade, SLOs e conformidade'
+          { command: 'thz.showAudit', title: 'Auditoria de Governança' },
+          'Gera relatório completo de rastreabilidade, SLOs e conformidade'
         ),
         new ThzCockpitItem(
-          'Inspecionar IR IntermediÃ¡rio',
+          'Inspecionar IR Intermediário',
           vscode.TreeItemCollapsibleState.None,
           'thz-ir/1 JSON',
           'symbol-structure',
           { command: 'thz.showIr', title: 'Mostrar IR' },
-          'Exibe a representaÃ§Ã£o intermediÃ¡ria formal (IR) da compilaÃ§Ã£o'
+          'Exibe a representação intermediária formal (IR) da compilação'
         ),
         new ThzCockpitItem(
           'Inspecionar LLVM IR',
@@ -1576,7 +1576,7 @@ export function activate(context: vscode.ExtensionContext): void {
           'Clang AOT',
           'file-binary',
           { command: 'thz.showLlvm', title: 'Mostrar LLVM IR' },
-          'Exibe o cÃ³digo LLVM nativo de alta performance gerado pelo compilador'
+          'Exibe o código LLVM nativo de alta performance gerado pelo compilador'
         ),
         new ThzCockpitItem(
           'Abrir Desktop IDE Oficial',
@@ -1600,7 +1600,7 @@ export function activate(context: vscode.ExtensionContext): void {
     }
   }
 
-  // 5.2 Provider de Outline Interativo de GovernanÃ§a & Arquitetura
+  // 5.2 Provider de Outline Interativo de Governança & Arquitetura
   class ThzOutlineTreeDataProvider implements vscode.TreeDataProvider<ThzCockpitItem> {
     private _onDidChangeTreeData = new vscode.EventEmitter<ThzCockpitItem | undefined | null | void>();
     readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
@@ -1643,16 +1643,16 @@ export function activate(context: vscode.ExtensionContext): void {
       const linhas = fonte.split(/\r?\n/);
       const items: ThzCockpitItem[] = [];
 
-      // ExtraÃ§Ã£o de Metadados
+      // Extração de Metadados
       const metaChildren: ThzCockpitItem[] = [];
       const mMod = fonte.match(/(?:(PROGRAMA(?:\s+VISUAL|\s+NEGOCIO|\s+ARQUITETURA)?|BIBLIOTECA|EXTENSAO|FERRAMENTA|TESTE))\s+([A-Za-z0-9_]+)/);
-      if (mMod) metaChildren.push(new ThzCockpitItem('MÃ³dulo', vscode.TreeItemCollapsibleState.None, mMod[2] + ` (${mMod[1]})`, 'package', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [1, filePath] }));
+      if (mMod) metaChildren.push(new ThzCockpitItem('Módulo', vscode.TreeItemCollapsibleState.None, mMod[2] + ` (${mMod[1]})`, 'package', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [1, filePath] }));
       const mDom = fonte.match(/DOMINIO\s*:\s*"([^"]+)"/);
-      if (mDom) metaChildren.push(new ThzCockpitItem('DomÃ­nio', vscode.TreeItemCollapsibleState.None, mDom[1], 'organization'));
+      if (mDom) metaChildren.push(new ThzCockpitItem('Domínio', vscode.TreeItemCollapsibleState.None, mDom[1], 'organization'));
       const mCam = fonte.match(/CAMADA\s*:\s*"([^"]+)"/);
       if (mCam) metaChildren.push(new ThzCockpitItem('Camada', vscode.TreeItemCollapsibleState.None, mCam[1], 'layers'));
       const mSlo = fonte.match(/SLO_LATENCIA_MAXIMA\s*:\s*"([^"]+)"/);
-      if (mSlo) metaChildren.push(new ThzCockpitItem('SLO de LatÃªncia', vscode.TreeItemCollapsibleState.None, mSlo[1], 'watch'));
+      if (mSlo) metaChildren.push(new ThzCockpitItem('SLO de Latência', vscode.TreeItemCollapsibleState.None, mSlo[1], 'watch'));
       const mCrit = fonte.match(/CRITICIDADE\s*:\s*"([^"]+)"/);
       if (mCrit) metaChildren.push(new ThzCockpitItem('Criticidade', vscode.TreeItemCollapsibleState.None, mCrit[1], 'alert'));
       const mAut = fonte.match(/AUTOR\s*:\s*"([^"]+)"/);
@@ -1664,7 +1664,7 @@ export function activate(context: vscode.ExtensionContext): void {
         items.push(new ThzCockpitItem('ðŸ›ï¸ Metadados de Arquitetura (ISO 42010)', vscode.TreeItemCollapsibleState.Expanded, `${metaChildren.length} atributo(s)`, 'circuit-board', undefined, undefined, metaChildren));
       }
 
-      // ExtraÃ§Ã£o de Estruturas
+      // Extração de Estruturas
       const estrChildren: ThzCockpitItem[] = [];
       let estAtual: { nome: string; linha: number; soa: boolean; campos: ThzCockpitItem[]; invariantes: ThzCockpitItem[] } | null = null;
 
@@ -1694,7 +1694,7 @@ export function activate(context: vscode.ExtensionContext): void {
               tag,
               'symbol-structure',
               { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [estAtual.linha, filePath] },
-              `Estrutura de dados ${estAtual.nome} (${estAtual.soa ? 'Layout Colunar SIMD' : 'Layout PadrÃ£o'})`,
+              `Estrutura de dados ${estAtual.nome} (${estAtual.soa ? 'Layout Colunar SIMD' : 'Layout Padrão'})`,
               subItens
             ));
             estAtual = null;
@@ -1705,7 +1705,7 @@ export function activate(context: vscode.ExtensionContext): void {
         items.push(new ThzCockpitItem('ðŸ“¦ Entidades & Estruturas de Dados', vscode.TreeItemCollapsibleState.Expanded, `${estrChildren.length} modelo(s)`, 'database', undefined, undefined, estrChildren));
       }
 
-      // ExtraÃ§Ã£o de Regras e Contratos DDD
+      // Extração de Regras e Contratos DDD
       const regrasChildren: ThzCockpitItem[] = [];
       let regraAtual: { nome: string; linha: number; req?: string; idRegra?: string; idemp?: boolean; subItens: ThzCockpitItem[] } | null = null;
 
@@ -1728,15 +1728,15 @@ export function activate(context: vscode.ExtensionContext): void {
           const mIdemp = l.match(/IDEMPOTENTE/);
           if (mIdemp) {
             regraAtual.idemp = true;
-            regraAtual.subItens.push(new ThzCockpitItem('ðŸ›¡ï¸ Garantia: IDEMPOTENTE', vscode.TreeItemCollapsibleState.None, 'TolerÃ¢ncia a RepetiÃ§Ãµes', 'shield', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
+            regraAtual.subItens.push(new ThzCockpitItem('ðŸ›¡ï¸ Garantia: IDEMPOTENTE', vscode.TreeItemCollapsibleState.None, 'Tolerância a Repetições', 'shield', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
           }
           const mExige = l.match(/^\s*EXIGE\s+(.+)/);
           if (mExige) {
-            regraAtual.subItens.push(new ThzCockpitItem(`ðŸ›¡ï¸ EXIGE ${mExige[1].trim()}`, vscode.TreeItemCollapsibleState.None, 'PrÃ©-CondiÃ§Ã£o', 'lock', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
+            regraAtual.subItens.push(new ThzCockpitItem(`ðŸ›¡ï¸ EXIGE ${mExige[1].trim()}`, vscode.TreeItemCollapsibleState.None, 'Pré-Condição', 'lock', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
           }
           const mGarante = l.match(/^\s*GARANTE\s+(.+)/);
           if (mGarante) {
-            regraAtual.subItens.push(new ThzCockpitItem(`âœ… GARANTE ${mGarante[1].trim()}`, vscode.TreeItemCollapsibleState.None, 'PÃ³s-CondiÃ§Ã£o', 'pass-filled', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
+            regraAtual.subItens.push(new ThzCockpitItem(`âœ… GARANTE ${mGarante[1].trim()}`, vscode.TreeItemCollapsibleState.None, 'Pós-Condição', 'pass-filled', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
           }
           const mOp = l.match(/^\s*OPERACAO\s+(?:(IDEMPOTENTE)\s+)?([A-Za-z0-9_]+)\s*\((.*?)\)(?:\s*:\s*([A-Za-z0-9_<>[\]]+))?/);
           if (mOp) {
@@ -1751,7 +1751,7 @@ export function activate(context: vscode.ExtensionContext): void {
               desc,
               'law',
               { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [regraAtual.linha, filePath] },
-              `Regra de NegÃ³cio DDD ${regraAtual.nome}`,
+              `Regra de Negócio DDD ${regraAtual.nome}`,
               regraAtual.subItens
             ));
             regraAtual = null;
@@ -1759,10 +1759,10 @@ export function activate(context: vscode.ExtensionContext): void {
         }
       }
       if (regrasChildren.length > 0) {
-        items.push(new ThzCockpitItem('âš–ï¸ Regras de NegÃ³cio & Contratos (DDD)', vscode.TreeItemCollapsibleState.Expanded, `${regrasChildren.length} regra(s)`, 'shield', undefined, undefined, regrasChildren));
+        items.push(new ThzCockpitItem('âš–ï¸ Regras de Negócio & Contratos (DDD)', vscode.TreeItemCollapsibleState.Expanded, `${regrasChildren.length} regra(s)`, 'shield', undefined, undefined, regrasChildren));
       }
 
-      // ExtraÃ§Ã£o de Procedimentos Globais
+      // Extração de Procedimentos Globais
       const procsChildren: ThzCockpitItem[] = [];
       for (let i = 0; i < linhas.length; i++) {
         const l = linhas[i];
@@ -1779,10 +1779,10 @@ export function activate(context: vscode.ExtensionContext): void {
         }
       }
       if (procsChildren.length > 0) {
-        items.push(new ThzCockpitItem('ðŸš€ Procedimentos de ExecuÃ§Ã£o', vscode.TreeItemCollapsibleState.Expanded, `${procsChildren.length} procedimento(s)`, 'run', undefined, undefined, procsChildren));
+        items.push(new ThzCockpitItem('ðŸš€ Procedimentos de Execução', vscode.TreeItemCollapsibleState.Expanded, `${procsChildren.length} procedimento(s)`, 'run', undefined, undefined, procsChildren));
       }
 
-      // ExtraÃ§Ã£o de Pipelines
+      // Extração de Pipelines
       const pipeChildren: ThzCockpitItem[] = [];
       let pipeAtual: { nome: string; linha: number; subItens: ThzCockpitItem[] } | null = null;
       for (let i = 0; i < linhas.length; i++) {
@@ -1798,7 +1798,7 @@ export function activate(context: vscode.ExtensionContext): void {
           const mTransf = l.match(/TRANSFORMACAO\s*:\s*(.+)/);
           if (mTransf) pipeAtual.subItens.push(new ThzCockpitItem(`âš™ï¸ Transform: ${mTransf[1].trim()}`, vscode.TreeItemCollapsibleState.None, undefined, 'gear'));
           const mDest = l.match(/DESTINO_SAIDA\s*:\s*(.+)/);
-          if (mDest) pipeAtual.subItens.push(new ThzCockpitItem(`ðŸ“¤ SaÃ­da: ${mDest[1].trim()}`, vscode.TreeItemCollapsibleState.None, undefined, 'arrow-up'));
+          if (mDest) pipeAtual.subItens.push(new ThzCockpitItem(`ðŸ“¤ Saída: ${mDest[1].trim()}`, vscode.TreeItemCollapsibleState.None, undefined, 'arrow-up'));
           if (l.match(/^\s*FIM_PIPELINE/)) {
             pipeChildren.push(new ThzCockpitItem(
               `ðŸ”„ Pipeline: ${pipeAtual.nome}`,
@@ -1817,7 +1817,7 @@ export function activate(context: vscode.ExtensionContext): void {
         items.push(new ThzCockpitItem('ðŸ”„ Pipelines de Dados', vscode.TreeItemCollapsibleState.Expanded, `${pipeChildren.length} pipeline(s)`, 'sync', undefined, undefined, pipeChildren));
       }
 
-      // ExtraÃ§Ã£o de EnumeraÃ§Ãµes
+      // Extração de Enumerações
       const enumChildren: ThzCockpitItem[] = [];
       for (let i = 0; i < linhas.length; i++) {
         const l = linhas[i];
@@ -1835,16 +1835,16 @@ export function activate(context: vscode.ExtensionContext): void {
         }
       }
       if (enumChildren.length > 0) {
-        items.push(new ThzCockpitItem('ðŸ“‘ EnumeraÃ§Ãµes de DomÃ­nio', vscode.TreeItemCollapsibleState.Collapsed, `${enumChildren.length} enum(s)`, 'symbol-enum', undefined, undefined, enumChildren));
+        items.push(new ThzCockpitItem('ðŸ“‘ Enumerações de Domínio', vscode.TreeItemCollapsibleState.Collapsed, `${enumChildren.length} enum(s)`, 'symbol-enum', undefined, undefined, enumChildren));
       }
 
-      // ExtraÃ§Ã£o de Telas (.thzui / PROGRAMA VISUAL)
+      // Extração de Telas (.thzui / PROGRAMA VISUAL)
       const uiChildren: ThzCockpitItem[] = [];
       for (let i = 0; i < linhas.length; i++) {
         const l = linhas[i];
         const numLinha = i + 1;
         const mBtn = l.match(/^\s*(?:BOTAO|botao|btn)\s*\(\s*"([^"]+)"/i);
-        if (mBtn) uiChildren.push(new ThzCockpitItem(`ðŸ”˜ BotÃ£o "${mBtn[1]}"`, vscode.TreeItemCollapsibleState.None, undefined, 'symbol-event', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
+        if (mBtn) uiChildren.push(new ThzCockpitItem(`ðŸ”˜ Botão "${mBtn[1]}"`, vscode.TreeItemCollapsibleState.None, undefined, 'symbol-event', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
         const mTela = l.match(/^\s*(?:TELA|PROGRAMA VISUAL)\s+([A-Za-z0-9_]+)/);
         if (mTela) uiChildren.push(new ThzCockpitItem(`ðŸ–¼ï¸ Tela: ${mTela[1]}`, vscode.TreeItemCollapsibleState.None, undefined, 'browser', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
       }
@@ -1879,13 +1879,13 @@ export function activate(context: vscode.ExtensionContext): void {
 
       const exemplosDefinidos = [
         { label: 'ðŸ’¼ Faturamento em Lote (SoA/SIMD)', path: resolverExemplo('faturamento.thz'), desc: 'faturamento.thz' },
-        { label: 'ðŸ›’ GestÃ£o de Pedidos & DDD', path: resolverExemplo('pedidos.thz'), desc: 'pedidos.thz' },
+        { label: 'ðŸ›’ Gestão de Pedidos & DDD', path: resolverExemplo('pedidos.thz'), desc: 'pedidos.thz' },
         { label: 'ðŸŽ¨ Showcase de Widgets GUI', path: resolverExemplo('showcase_widgets_gui.thz'), desc: 'showcase_widgets_gui.thz' },
-        { label: 'ðŸ’³ Simulador de CrÃ©dito & FinanÃ§as', path: resolverExemplo('simulador_credito_gui.thz'), desc: 'simulador_credito_gui.thz' },
+        { label: 'ðŸ’³ Simulador de Crédito & Finanças', path: resolverExemplo('simulador_credito_gui.thz'), desc: 'simulador_credito_gui.thz' },
         { label: 'ðŸ·ï¸ THZ Studio IDE Declarativo', path: resolverExemplo('thz_studio_ide.thzui'), desc: 'thz_studio_ide.thzui' },
-        { label: 'ðŸ“¦ PadrÃ£o Result DDD', path: resolverExemplo(path.join('colecao', '07-resultado-ddd.thz')), desc: '07-resultado-ddd.thz' },
-        { label: 'âš¡ VetorizaÃ§Ã£o SIMD (AVX2/512)', path: resolverExemplo(path.join('colecao', '08-vetorizado-simd.thz')), desc: '08-vetorizado-simd.thz' },
-        { label: 'ðŸ›¡ï¸ IdempotÃªncia em Larga Escala', path: resolverExemplo(path.join('colecao', '11-idempotencia-larga-escala.thz')), desc: '11-idempotencia-larga-escala.thz' }
+        { label: 'ðŸ“¦ Padrão Result DDD', path: resolverExemplo(path.join('colecao', '07-resultado-ddd.thz')), desc: '07-resultado-ddd.thz' },
+        { label: 'âš¡ Vetorização SIMD (AVX2/512)', path: resolverExemplo(path.join('colecao', '08-vetorizado-simd.thz')), desc: '08-vetorizado-simd.thz' },
+        { label: 'ðŸ›¡ï¸ Idempotência em Larga Escala', path: resolverExemplo(path.join('colecao', '11-idempotencia-larga-escala.thz')), desc: '11-idempotencia-larga-escala.thz' }
       ];
 
       const items = exemplosDefinidos.map(ex => {
@@ -1893,7 +1893,7 @@ export function activate(context: vscode.ExtensionContext): void {
         return new ThzCockpitItem(
           ex.label,
           vscode.TreeItemCollapsibleState.None,
-          existe ? ex.desc : '(nÃ£o encontrado)',
+          existe ? ex.desc : '(não encontrado)',
           'file-code',
           existe ? { command: 'thz.openFile', title: 'Abrir Exemplo', arguments: [ex.path] } : undefined,
           `Clique para abrir ${ex.desc} no editor`
@@ -1921,18 +1921,18 @@ export function activate(context: vscode.ExtensionContext): void {
       const isEstrito = vscode.workspace.getConfiguration('thz-lang').get<boolean>('lintEstrito', false);
 
       const items: ThzCockpitItem[] = [
-        new ThzCockpitItem('VersÃ£o do Engine', vscode.TreeItemCollapsibleState.None, 'THZ-LANG ﻿0.4.0', 'tag'),
+        new ThzCockpitItem('Versão do Engine', vscode.TreeItemCollapsibleState.None, 'THZ-LANG ﻿0.4.0', 'tag'),
         new ThzCockpitItem('Language Server (LSP)', vscode.TreeItemCollapsibleState.None, client ? 'Conectado (Java 25)' : 'Inativo', 'server-process'),
-        new ThzCockpitItem('Backend de CompilaÃ§Ã£o', vscode.TreeItemCollapsibleState.None, 'LLVM Clang AOT / GraalVM', 'zap'),
-        new ThzCockpitItem('Gerenciamento de MemÃ³ria', vscode.TreeItemCollapsibleState.None, 'Arena ContÃ­gua O(1) (ISO TR 24772)', 'layers'),
-        new ThzCockpitItem('AritmÃ©tica Decimais', vscode.TreeItemCollapsibleState.None, 'ISO/IEC 10967 (DecimalFixo Half-Even)', 'shield'),
+        new ThzCockpitItem('Backend de Compilação', vscode.TreeItemCollapsibleState.None, 'LLVM Clang AOT / GraalVM', 'zap'),
+        new ThzCockpitItem('Gerenciamento de Memória', vscode.TreeItemCollapsibleState.None, 'Arena Contígua O(1) (ISO TR 24772)', 'layers'),
+        new ThzCockpitItem('Aritmética Decimais', vscode.TreeItemCollapsibleState.None, 'ISO/IEC 10967 (DecimalFixo Half-Even)', 'shield'),
         new ThzCockpitItem(
           'Modo Estrito (Lint Restritivo)',
           vscode.TreeItemCollapsibleState.None,
           isEstrito ? 'Ativado ðŸ›¡ï¸' : 'Desativado (Clique para alternar)',
           isEstrito ? 'pass-filled' : 'circle-outline',
           { command: 'thz.toggleLintEstrito', title: 'Alternar Modo Estrito' },
-          'Exige metadados ISO 42010, SLO de latÃªncia, contratos EXIGE/GARANTE e rastreabilidade'
+          'Exige metadados ISO 42010, SLO de latência, contratos EXIGE/GARANTE e rastreabilidade'
         )
       ];
 
@@ -1940,7 +1940,7 @@ export function activate(context: vscode.ExtensionContext): void {
     }
   }
 
-  // Registro das Ãrvores e AtualizaÃ§Ãµes
+  // Registro das Árvores e Atualizações
   const cockpitActionsProvider = new ThzCockpitActionsProvider();
   const outlineProvider = new ThzOutlineTreeDataProvider();
   const galleryProvider = new ThzGalleryTreeDataProvider();
@@ -1964,7 +1964,7 @@ export function activate(context: vscode.ExtensionContext): void {
     }
   });
 
-  // Comandos auxiliares de navegaÃ§Ã£o do Cockpit
+  // Comandos auxiliares de navegação do Cockpit
   context.subscriptions.push(
     vscode.commands.registerCommand('thz.refreshCockpit', () => atualizarCockpit()),
 
@@ -1986,7 +1986,7 @@ export function activate(context: vscode.ExtensionContext): void {
         const doc = await vscode.workspace.openTextDocument(filePath);
         await vscode.window.showTextDocument(doc);
       } else {
-        vscode.window.showWarningMessage('Arquivo nÃ£o encontrado: ' + filePath);
+        vscode.window.showWarningMessage('Arquivo não encontrado: ' + filePath);
       }
     }),
 

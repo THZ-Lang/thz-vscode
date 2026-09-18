@@ -1,8 +1,8 @@
-﻿{
+{
   "name": "thz-lang",
   "displayName": "THZ-LANG",
-  "description": "Language support for THZ-LANG (.thz) â€” LSP powered by Language Service Core (G1)",
-  "version": "﻿0.4.0",
+  "description": "Language support for THZ-LANG (.thz) — LSP powered by Language Service Core (G1)",
+  "version": "0.4.0",
   "publisher": "thz-lang",
   "icon": "icon.png",
   "license": "MIT",
@@ -88,7 +88,7 @@
               },
               "stopOnEntry": {
                 "type": "boolean",
-                "description": "Pausar automaticamente no inÃ­cio da execuÃ§Ã£o.",
+                "description": "Pausar automaticamente no início da execução.",
                 "default": false
               }
             }
@@ -106,7 +106,7 @@
         "configurationSnippets": [
           {
             "label": "THZ: Depurar Programa",
-            "description": "ConfiguraÃ§Ã£o de depuraÃ§Ã£o de programas THZ-LANG",
+            "description": "Configuração de depuração de programas THZ-LANG",
             "body": {
               "type": "thz",
               "request": "launch",
@@ -131,12 +131,12 @@
       "thz-sidebar": [
         {
           "id": "thz-cockpit-view",
-          "name": "Cockpit de Comando (AÃ§Ãµes RÃ¡pidas)",
+          "name": "Cockpit de Comando (Ações Rápidas)",
           "icon": "assets/thz-sidebar.svg"
         },
         {
           "id": "thz-governance-view",
-          "name": "Estrutura do CÃ³digo & Arquitetura Viva",
+          "name": "Estrutura do Código & Arquitetura Viva",
           "icon": "assets/thz-sidebar.svg"
         },
         {
@@ -160,7 +160,7 @@
       },
       {
         "command": "thz.check",
-        "title": "Verificar CÃ³digo THZ",
+        "title": "Verificar Código THZ",
         "category": "THZ-LANG",
         "icon": "$(check)"
       },
@@ -190,7 +190,7 @@
       },
       {
         "command": "thz.showAudit",
-        "title": "Mostrar Auditoria de GovernanÃ§a",
+        "title": "Mostrar Auditoria de Governança",
         "category": "THZ-LANG",
         "icon": "$(shield)"
       },
@@ -323,7 +323,7 @@
         "thz-lang.cliPath": {
           "type": "string",
           "default": "",
-          "description": "Caminho opcional customizado para o executÃ¡vel ou JAR da CLI do THZ-LANG."
+          "description": "Caminho opcional customizado para o executável ou JAR da CLI do THZ-LANG."
         },
         "thz-lang.lspJarPath": {
           "type": "string",
@@ -333,7 +333,7 @@
         "thz-lang.lintEstrito": {
           "type": "boolean",
           "default": false,
-          "description": "Ativa lint --estrito (pragma, rastreabilidade, SLO e contratos obrigatÃ³rios)."
+          "description": "Ativa lint --estrito (pragma, rastreabilidade, SLO e contratos obrigatórios)."
         },
         "thz-lang.codeLens": {
           "type": "boolean",
@@ -348,7 +348,7 @@
             "verbose"
           ],
           "default": "off",
-          "description": "NÃ­vel de trace do servidor LSP."
+          "description": "Nível de trace do servidor LSP."
         }
       }
     }
@@ -370,4 +370,3 @@
     "typescript": "^5.3.3"
   }
 }
-
