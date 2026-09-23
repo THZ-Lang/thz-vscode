@@ -7,6 +7,8 @@
     { "include": "#strings" },
     { "include": "#numbers" },
     { "include": "#named-declarations" },
+    { "include": "#typed-properties" },
+    { "include": "#inferred-assignments" },
     { "include": "#contracts" },
     { "include": "#pipeline-blocks" },
     { "include": "#declarations" },
@@ -50,6 +52,17 @@
               "match": "\\\\."
             }
           ]
+        },
+        {
+          "name": "string.quoted.single.thz",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            {
+              "name": "constant.character.escape.thz",
+              "match": "\\\\."
+            }
+          ]
         }
       ]
     },
@@ -68,45 +81,68 @@
     "named-declarations": {
       "patterns": [
         {
-          "match": "\\b(PROGRAMA\\s+(?:NEGOCIO|VISUAL|ARQUITETURA)?|PROGRAMA|BIBLIOTECA|EXTENSAO|FERRAMENTA|TESTE|TELA|PIPELINE_DADOS|programa\\s+(?:NEGOCIO|VISUAL|ARQUITETURA)?|biblioteca|ferramenta|teste|tela)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+          "match": "(?i)\\b(programa\\s+(?:negocio|visual|arquitetura)?|programa|biblioteca|extensao|ferramenta|teste|tela|pipeline_dados)\\s+([A-Za-z_][A-Za-z0-9_]*)",
           "captures": {
             "1": { "name": "keyword.control.declaration.thz" },
             "2": { "name": "entity.name.type.module.thz" }
           }
         },
         {
-          "match": "\\b(ESTRUTURA|ENUMERACAO|estrutura|enumeracao)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+          "match": "(?i)\\b(estrutura|enumeracao|struct|enum)\\s+([A-Za-z_][A-Za-z0-9_]*)",
           "captures": {
             "1": { "name": "keyword.control.declaration.thz" },
             "2": { "name": "entity.name.type.class.thz" }
           }
         },
         {
-          "match": "\\b(REGRA_NEGOCIO|PROCEDIMENTO|FUNCAO|OPERACAO|TRANSFORMACAO|regra|procedimento|funcao|operacao)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+          "match": "(?i)\\b(regra_negocio|regra|procedimento|funcao|operacao|transformacao|rule|fn|proc|func)\\s+([A-Za-z_][A-Za-z0-9_]*)",
           "captures": {
             "1": { "name": "keyword.control.declaration.thz" },
             "2": { "name": "entity.name.function.thz" }
           }
         },
         {
-          "match": "\\b(FONTE_ENTRADA|DESTINO_SAIDA)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+          "match": "(?i)\\b(fonte_entrada|destino_saida)\\s+([A-Za-z_][A-Za-z0-9_]*)",
           "captures": {
             "1": { "name": "keyword.control.declaration.thz" },
             "2": { "name": "entity.name.type.class.thz" }
           }
         },
         {
-          "match": "\\b(VARIAVEL)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+          "match": "(?i)\\b(variavel|var|let|const|val)\\s+([A-Za-z_][A-Za-z0-9_]*)",
           "captures": {
             "1": { "name": "storage.type.variable.thz" },
             "2": { "name": "variable.other.declaration.thz" }
           }
         },
         {
-          "match": "\\b(CRIAR)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+          "match": "(?i)\\b(criar|new)\\s+([A-Za-z_][A-Za-z0-9_]*)",
           "captures": {
             "1": { "name": "keyword.operator.new.thz" },
             "2": { "name": "entity.name.type.class.thz" }
+          }
+        }
+      ]
+    },
+    "typed-properties": {
+      "patterns": [
+        {
+          "match": "([A-Za-z_][A-Za-z0-9_]*)\\s*(:)(?!:)\\s*([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "variable.other.property.thz" },
+            "2": { "name": "punctuation.separator.thz" },
+            "3": { "name": "entity.name.type.thz" }
+          }
+        }
+      ]
+    },
+    "inferred-assignments": {
+      "patterns": [
+        {
+          "match": "([A-Za-z_][A-Za-z0-9_]*)\\s*(:=)",
+          "captures": {
+            "1": { "name": "variable.other.assignment.thz" },
+            "2": { "name": "keyword.operator.assignment.thz" }
           }
         }
       ]
@@ -115,7 +151,7 @@
       "patterns": [
         {
           "name": "keyword.control.contract.thz",
-          "match": "\\b(CONTRATO_ENTRADA|FIM_CONTRATO_ENTRADA|CONTRATO_SAIDA|FIM_CONTRATO_SAIDA|EXIGE|GARANTE|INVARIANTE|CHAVE_IDEMPOTENCIA)\\b"
+          "match": "(?i)\\b(contrato_entrada|fim_contrato_entrada|contrato_saida|fim_contrato_saida|exige|garante|invariante|chave_idempotencia|require|ensure|invariant)\\b"
         }
       ]
     },
@@ -123,11 +159,11 @@
       "patterns": [
         {
           "name": "keyword.control.pipeline.thz",
-          "match": "\\b(PIPELINE_DADOS|FIM_PIPELINE|FONTE_ENTRADA|FIM_FONTE|DESTINO_SAIDA|FIM_DESTINO|TRANSFORMACAO|FIM_TRANSFORMACAO)\\b"
+          "match": "(?i)\\b(pipeline_dados|fim_pipeline|fonte_entrada|fim_fonte|destino_saida|fim_destino|transformacao|fim_transformacao)\\b"
         },
         {
           "name": "support.constant.pipeline.thz",
-          "match": "\\b(STREAMING|LOTE|CONECTOR|FORMATO|COLECAO)\\b"
+          "match": "(?i)\\b(streaming|lote|conector|formato|colecao)\\b"
         }
       ]
     },
@@ -135,7 +171,7 @@
       "patterns": [
         {
           "name": "keyword.control.declaration.thz",
-          "match": "\\b(PROGRAMA|VISUAL|NEGOCIO|ARQUITETURA|BIBLIOTECA|EXTENSAO|FERRAMENTA|TESTE|TELA|FIM_PROGRAMA|FIM_BIBLIOTECA|FIM_EXTENSAO|FIM_FERRAMENTA|FIM_TESTE|FIM_TELA|METADADOS_ARQUITETURA|FIM_METADADOS|ESTRUTURA|FIM_ESTRUTURA|ENUMERACAO|FIM_ENUMERACAO|REGRA_NEGOCIO|FIM_REGRA_NEGOCIO|PROCEDIMENTO|FUNCAO|FIM_FUNCAO|OPERACAO|FIM_OPERACAO|VARIAVEL|IMPORTAR|VERSAO_LINGUAGEM|CRIAR|IDEMPOTENTE|programa|biblioteca|ferramenta|teste|tela|metadados|estrutura|enumeracao|regra|procedimento|funcao|operacao)\\b"
+          "match": "(?i)\\b(programa|visual|negocio|arquitetura|biblioteca|extensao|ferramenta|teste|tela|fim_programa|fim_biblioteca|fim_extensao|fim_ferramenta|fim_teste|fim_tela|metadados_arquitetura|fim_metadados|metadados|estrutura|fim_estrutura|struct|enumeracao|fim_enumeracao|enum|regra_negocio|fim_regra_negocio|regra|rule|procedimento|proc|funcao|fim_funcao|fn|func|operacao|fim_operacao|op|variavel|var|val|let|const|importar|versao_linguagem|criar|new|idempotente)\\b"
         }
       ]
     },
@@ -143,7 +179,7 @@
       "patterns": [
         {
           "name": "keyword.control.thz",
-          "match": "\\b(INICIO|FIM|SE|ENTAO|SENAO|FIM_SE|ENQUANTO|FACA|FIM_ENQUANTO|PARA|DE|ATE|PASSO|FIM_PARA|RETORNE|RETORNAR|FALHAR_COM|EXIBA|LER|CASO_RESULTADO|ESCOLHA|CASO|FIM_CASO|FIM_ESCOLHA|SUCESSO|ERRO|FALHA|TENTE|CAPTURE|FIM_TENTE|se|senao|enquanto|para|de|ate|passo|retorne|exiba|exige|garante|invariante)\\b"
+          "match": "(?i)\\b(inicio|fim|se|entao|senao|fim_se|enquanto|faca|fim_enquanto|para|de|ate|passo|fim_para|retorne|retornar|return|falhar_com|exiba|print|ler|caso_resultado|escolha|caso|match|case|fim_caso|fim_escolha|sucesso|erro|falha|tente|capture|fim_tente|try|catch|if|else|while|for)\\b"
         }
       ]
     },
@@ -151,7 +187,7 @@
       "patterns": [
         {
           "name": "keyword.control.memory.thz",
-          "match": "\\b(USAR_BLOCO_MEMORIA|FIM_BLOCO_MEMORIA|VETORIZAR_PARA|FIM_VETORIZAR|LAYOUT_COLUNAR|EM|PASSO_SIMD|ARENA_EPHEMERAL)\\b"
+          "match": "(?i)\\b(usar_bloco_memoria|fim_bloco_memoria|vetorizar_para|fim_vetorizar|layout_colunar|em|passo_simd|arena_ephemeral)\\b"
         }
       ]
     },
@@ -159,11 +195,11 @@
       "patterns": [
         {
           "name": "support.class.thz",
-          "match": "\\b(TEXTO|MATEMATICA|DATA|TELA|GUI|Console|ThzIO|ThzConfig|ThzSecurity|ThzLog|ThzHttpServer|DOCUMENTO|ThzUiMaker)\\b"
+          "match": "(?i)\\b(texto|matematica|data|tela|gui|console|thzio|thzconfig|thzsecurity|thzlog|thzhttpserver|documento|thzuimaker)\\b"
         },
         {
           "name": "support.function.thz",
-          "match": "(?<=\\.)(comprimento|tamanho|maiusculas|minusculas|aparar|contem|subtexto|substituir|dividir|juntar|abs|min|max|potencia|raiz|arredondar|aleatorio|hoje|agora|criar|criarDataHora|adicionarDias|adicionarHoras|diferencaDias|ano|mes|dia|diaDaSemana|texto|renderizarFormulario|alerta|confirmar|pedirTexto|criarContainer|criarCard|adicionarMetrica|adicionarBotao|adicionarCampoTexto|adicionarCampoMoeda|exibir)\\b"
+          "match": "(?<=\\.)([A-Za-z_][A-Za-z0-9_]*)\\b"
         }
       ]
     },
@@ -171,7 +207,7 @@
       "patterns": [
         {
           "name": "entity.other.attribute-name.thz",
-          "match": "\\b(SISTEMA|MODULO|DOMINIO|SUBDOMINIO|CAMADA|VERSAO|AUTOR|RESPONSAVEL|SLO_LATENCIA_MS|SLO_LATENCIA_MAXIMA|CONFORMIDADE|CRITICIDADE|IDENTIFICADOR_REGRA|RASTREIO_REQUISITO|DESCRICAO|TIPO|COLECAO|CONECTOR|FORMATO)(?=\\s*:)"
+          "match": "(?i)\\b(sistema|modulo|dominio|subdominio|camada|versao|autor|responsavel|slo_latencia_ms|slo_latencia_maxima|conformidade|criticidade|identificador_regra|rastreio_requisito|descricao|tipo|colecao|conector|formato)(?=\\s*:)"
         }
       ]
     },
@@ -179,7 +215,7 @@
       "patterns": [
         {
           "name": "entity.name.type.thz",
-          "match": "\\b(TEXTO|LOGICO|UUID|DATA|DATA_HORA|NATURAL8|NATURAL16|NATURAL32|NATURAL64|INTEIRO|INTEIRO8|INTEIRO16|INTEIRO32|INTEIRO64|DECIMAL|MONETARIO|FATIA|RESULTADO|LISTA)\\b"
+          "match": "(?i)\\b(texto|logico|uuid|data|data_hora|natural8|natural16|natural32|natural64|inteiro|inteiro8|inteiro16|inteiro32|inteiro64|decimal|monetario|fatia|resultado|lista|bool|boolean|string|int|float|void)\\b"
         }
       ]
     },
@@ -187,7 +223,7 @@
       "patterns": [
         {
           "name": "constant.language.thz",
-          "match": "\\b(VERDADEIRO|FALSO|NULO)\\b"
+          "match": "(?i)\\b(verdadeiro|falso|nulo|true|false|null)\\b"
         }
       ]
     },
@@ -195,19 +231,23 @@
       "patterns": [
         {
           "name": "keyword.operator.logical.thz",
-          "match": "\\b(E|OU|NAO)\\b"
+          "match": "(?i)\\b(e|ou|nao|and|or|not)\\b|&&|\\|\\||!"
         }
       ]
     },
     "operators": {
       "patterns": [
         {
+          "name": "keyword.operator.arrow.thz",
+          "match": "(->|=>)"
+        },
+        {
           "name": "keyword.operator.assignment.thz",
-          "match": "<-"
+          "match": "(:=|<-|=)"
         },
         {
           "name": "keyword.operator.comparison.thz",
-          "match": "(<=|>=|<>|==|=|!=|<|>)"
+          "match": "(<=|>=|<>|==|!=|<|>)"
         },
         {
           "name": "keyword.operator.arithmetic.thz",
@@ -219,11 +259,11 @@
       "patterns": [
         {
           "name": "punctuation.separator.thz",
-          "match": "(:|,)"
+          "match": "(:|,|;)"
         },
         {
           "name": "punctuation.bracket.thz",
-          "match": "(\\(|\\)|\\[|\\])"
+          "match": "(\\(|\\)|\\[|\\]|\\{|\\})"
         }
       ]
     }
