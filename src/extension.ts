@@ -14,7 +14,7 @@ let thzTerminal: vscode.Terminal | undefined;
 
 export function activate(context: vscode.ExtensionContext): void {
   // ==========================================================================
-  // 0. DEPURAÃ‡ÃƒO NATIVA E RUN & DEBUG (DAP - Debug Adapter Protocol)
+  // 0. DEPURAÇÃO NATIVA E RUN & DEBUG (DAP - Debug Adapter Protocol)
   // ==========================================================================
   context.subscriptions.push(
     vscode.debug.registerDebugConfigurationProvider('thz', new ThzDebugConfigurationProvider()),
@@ -87,7 +87,7 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push({ dispose: () => client?.stop() } as vscode.Disposable);
 
   // ==========================================================================
-  // 1. EXECUÃ‡ÃƒO NO TERMINAL INTEGRADO
+  // 1. EXECUÇÃO NO TERMINAL INTEGRADO
   // ==========================================================================
 
   function resolverComandoCli(filePath?: string, argsExtras: string = ''): { comando: string; cwd?: string } {
@@ -252,16 +252,16 @@ export function activate(context: vscode.ExtensionContext): void {
           const range = new vscode.Range(i, 0, i, line.length);
           lenses.push(
             new vscode.CodeLens(range, {
-              title: `â–¶ Executar Regra (${nomeRegra})`,
+              title: `▶ Executar Regra (${nomeRegra})`,
               command: 'thz.runTarget',
               arguments: [nomeRegra],
             }),
             new vscode.CodeLens(range, {
-              title: 'ðŸ›¡ï¸ Auditar Governança',
+          title: '🛡️ Auditar Governança',
               command: 'thz.showAudit',
             }),
             new vscode.CodeLens(range, {
-              title: 'ðŸ“ Ver Arquitetura',
+          title: '📐 Ver Arquitetura',
               command: 'thz.previewArchitecture',
             })
           );
@@ -274,7 +274,7 @@ export function activate(context: vscode.ExtensionContext): void {
           const range = new vscode.Range(i, 0, i, line.length);
           lenses.push(
             new vscode.CodeLens(range, {
-              title: `â–¶ Executar Operação: ${nomeOp}()`,
+              title: `▶ Executar Operação: ${nomeOp}()`,
               command: 'thz.runTarget',
               arguments: [nomeOp],
             })
@@ -288,7 +288,7 @@ export function activate(context: vscode.ExtensionContext): void {
           const range = new vscode.Range(i, 0, i, line.length);
           lenses.push(
             new vscode.CodeLens(range, {
-              title: `â–¶ Executar Procedimento: ${nomeProc}()`,
+              title: `▶ Executar Procedimento: ${nomeProc}()`,
               command: 'thz.runTarget',
               arguments: [nomeProc],
             })
@@ -572,56 +572,56 @@ export function activate(context: vscode.ExtensionContext): void {
     diagGeral += '    classDef pipe fill:#134e4a,stroke:#2dd4bf,stroke-width:2px,color:#f0fdf4;\n';
     diagGeral += '    classDef gate fill:#881337,stroke:#f43f5e,stroke-width:2px,color:#fff1f2;\n';
 
-    diagGeral += `    subgraph Modulo ["ðŸ›ï¸ ${escaparMermaidTexto(nomeModulo)} (${escaparMermaidTexto(camada)})"]\n`;
+    diagGeral += `    subgraph Modulo ["🏛️ ${escaparMermaidTexto(nomeModulo)} (${escaparMermaidTexto(camada)})"]\n`;
     diagGeral += `        direction TB\n`;
 
     if (ests.length > 0) {
-      diagGeral += `        subgraph Entidades ["ðŸ“¦ Entidades e Modelos de Dados"]\n`;
+      diagGeral += `        subgraph Entidades ["📦 Entidades e Modelos de Dados"]\n`;
       for (const e of ests) {
         const flagSoa = e.detalhes.layoutSoa ? ' (SoA/SIMD)' : '';
-        diagGeral += `            ${e.id}["ðŸ“¦ ${escaparMermaidTexto(e.nome + flagSoa)}"]\n`;
+        diagGeral += `            ${e.id}["📦 ${escaparMermaidTexto(e.nome + flagSoa)}"]\n`;
       }
       diagGeral += `        end\n`;
     }
 
     if (regras.length > 0) {
-      diagGeral += `        subgraph RegrasDDD ["ðŸ›¡ï¸ Regras de Negócio e Contratos"]\n`;
+      diagGeral += `        subgraph RegrasDDD ["🛡️ Regras de Negócio e Contratos"]\n`;
       for (const r of regras) {
         const idLabel = r.detalhes.idRegra ? `(${r.detalhes.idRegra}) ` : '';
-        const idempIcon = r.detalhes.idempotente ? ' ðŸ›¡ï¸' : '';
-        diagGeral += `            ${r.id}["âš–ï¸ ${escaparMermaidTexto(idLabel + r.nome + idempIcon)}"]\n`;
+          const idempIcon = r.detalhes.idempotente ? ' 🛡️' : '';
+            diagGeral += `            ${r.id}["⚖️ ${escaparMermaidTexto(idLabel + r.nome + idempIcon)}"]\n`;
 
         if (r.detalhes.requisito) {
           const reqClean = escaparMermaidTexto(r.detalhes.requisito);
           const reqId = sanitizarId('REQ_' + r.nome);
-          diagGeral += `            ${reqId}["ðŸ“‹ Req: ${reqClean}"] --> ${r.id}\n`;
+          diagGeral += `            ${reqId}["📋 Req: ${reqClean}"] --> ${r.id}\n`;
         }
 
         if (r.detalhes.preCondicoes && r.detalhes.preCondicoes.length > 0) {
           const preId = sanitizarId('PRE_' + r.nome);
-          diagGeral += `            ${preId}["ðŸ›¡ï¸ EXIGE: ${r.detalhes.preCondicoes.length} cláusula(s)"] -.-> ${r.id}\n`;
+            diagGeral += `            ${preId}["🔒 EXIGE: ${r.detalhes.preCondicoes.length} cláusula(s)"] -.-> ${r.id}\n`;
         }
 
         if (r.detalhes.operacoes) {
           for (const op of r.detalhes.operacoes) {
             const opId = sanitizarId('OP_' + r.nome + '_' + op.nome);
-            const opIdemp = op.idempotente ? ' âš¡(Idemp)' : ' âš¡';
+            const opIdemp = op.idempotente ? ' ⚡(Idemp)' : ' ⚡';
             diagGeral += `            ${r.id} ==> ${opId}["${opIdemp} ${escaparMermaidTexto(op.nome)}()"]\n`;
           }
         }
 
         if (r.detalhes.posCondicoes && r.detalhes.posCondicoes.length > 0) {
           const posId = sanitizarId('POS_' + r.nome);
-          diagGeral += `            ${r.id} -.-> ${posId}["âœ… GARANTE: ${r.detalhes.posCondicoes.length} cláusula(s)"]\n`;
+          diagGeral += `            ${r.id} -.-> ${posId}["✅ GARANTE: ${r.detalhes.posCondicoes.length} cláusula(s)"]\n`;
         }
       }
       diagGeral += `        end\n`;
     }
 
     if (pipes.length > 0) {
-      diagGeral += `        subgraph Pipelines ["ðŸš€ Pipelines de Dados"]\n`;
+      diagGeral += `        subgraph Pipelines ["🚀 Pipelines de Dados"]\n`;
       for (const p of pipes) {
-        diagGeral += `            ${p.id}["ðŸ”„ Pipeline: ${escaparMermaidTexto(p.nome)}"]\n`;
+        diagGeral += `            ${p.id}["🔄 Pipeline: ${escaparMermaidTexto(p.nome)}"]\n`;
       }
       diagGeral += `        end\n`;
     }
@@ -676,26 +676,26 @@ export function activate(context: vscode.ExtensionContext): void {
     diagRegras += '    classDef gate fill:#881337,stroke:#f43f5e,stroke-width:2px,color:#fff1f2;\n';
     for (const r of regras) {
       const idLabel = r.detalhes.idRegra ? `(${r.detalhes.idRegra}) ` : '';
-      diagRegras += `    ${r.id}["âš–ï¸ Regra: ${escaparMermaidTexto(idLabel + r.nome)}"]\n`;
+    diagRegras += `    ${r.id}["⚖️ Regra: ${escaparMermaidTexto(idLabel + r.nome)}"]\n`;
       diagRegras += `    class ${r.id} rule;\n`;
       if (r.detalhes.requisito) {
         const reqClean = escaparMermaidTexto(r.detalhes.requisito);
         const reqId = sanitizarId('REQ_' + r.nome);
-        diagRegras += `    ${reqId}["ðŸ“Œ Requisito: ${reqClean}"] --> ${r.id}\n`;
+        diagRegras += `    ${reqId}["📌 Requisito: ${reqClean}"] --> ${r.id}\n`;
         diagRegras += `    class ${reqId} req;\n`;
       }
       if (r.detalhes.preCondicoes) {
         for (let i = 0; i < r.detalhes.preCondicoes.length; i++) {
           const preClean = escaparMermaidTexto(r.detalhes.preCondicoes[i]);
           const exId = sanitizarId(`EX_${r.nome}_${i}`);
-          diagRegras += `    ${r.id} --> ${exId}["ðŸ›¡ï¸ EXIGE: ${preClean}"]\n`;
+    diagRegras += `    ${r.id} --> ${exId}["🔒 EXIGE: ${preClean}"]\n`;
           diagRegras += `    class ${exId} gate;\n`;
         }
       }
       if (r.detalhes.operacoes) {
         for (const op of r.detalhes.operacoes) {
           const opId = sanitizarId(`OP_${r.nome}_${op.nome}`);
-          diagRegras += `    ${r.id} ==> ${opId}["âš¡ Operação: ${escaparMermaidTexto(op.nome)}()"]\n`;
+          diagRegras += `    ${r.id} ==> ${opId}["⚡ Operação: ${escaparMermaidTexto(op.nome)}()"]\n`;
           diagRegras += `    class ${opId} op;\n`;
         }
       }
@@ -703,7 +703,7 @@ export function activate(context: vscode.ExtensionContext): void {
         for (let i = 0; i < r.detalhes.posCondicoes.length; i++) {
           const posClean = escaparMermaidTexto(r.detalhes.posCondicoes[i]);
           const gaId = sanitizarId(`GA_${r.nome}_${i}`);
-          diagRegras += `    ${r.id} --> ${gaId}["âœ… GARANTE: ${posClean}"]\n`;
+          diagRegras += `    ${r.id} --> ${gaId}["✅ GARANTE: ${posClean}"]\n`;
           diagRegras += `    class ${gaId} gate;\n`;
         }
       }
@@ -717,11 +717,11 @@ export function activate(context: vscode.ExtensionContext): void {
     for (const p of pipes) {
       const org = p.detalhes.origemPipeline ? escaparMermaidTexto(p.detalhes.origemPipeline) : 'Entrada';
       const dst = p.detalhes.destinoPipeline ? escaparMermaidTexto(p.detalhes.destinoPipeline) : 'Saída';
-      diagFluxo += `    ${p.id}_IN["ðŸ“¥ Fonte: ${org}"] --> ${p.id}["ðŸ”„ Pipeline: ${escaparMermaidTexto(p.nome)}"] --> ${p.id}_OUT["ðŸ“¤ Destino: ${dst}"]\n`;
+      diagFluxo += `    ${p.id}_IN["📥 Fonte: ${org}"] --> ${p.id}["🔄 Pipeline: ${escaparMermaidTexto(p.nome)}"] --> ${p.id}_OUT["📤 Destino: ${dst}"]\n`;
       diagFluxo += `    class ${p.id} pipe;\n`;
     }
     for (const pr of procs) {
-      diagFluxo += `    ${pr.id}["ðŸš€ Procedimento: ${escaparMermaidTexto(pr.nome)}()"]\n`;
+      diagFluxo += `    ${pr.id}["🚀 Procedimento: ${escaparMermaidTexto(pr.nome)}()"]\n`;
       diagFluxo += `    class ${pr.id} proc;\n`;
     }
     if (pipes.length === 0 && procs.length === 0) diagFluxo += '    SemFluxo["Nenhum Pipeline ou Procedimento Declarado"]\n';
@@ -864,16 +864,16 @@ export function activate(context: vscode.ExtensionContext): void {
     <div class="header-info">
       <h1>
         <span class="status-dot" aria-hidden="true"></span>
-        ðŸ“ THZ-LANG — Arquitetura Viva & DDD
+        📐 THZ-LANG — Arquitetura Viva & DDD
         <span class="badge">${dados.tipoModulo}</span>
       </h1>
       <p>Módulo: <strong>${dados.nomeModulo}</strong> | Versão: ${dados.versao} | Conformidade: <strong>${dados.conformidade}</strong></p>
     </div>
     <div class="header-actions" role="toolbar" aria-label="Ações de Visualização">
-      <button class="btn" id="btnHighContrast" aria-pressed="false" title="Alternar Alto Contraste (WCAG AAA)">ðŸŒ“ Alto Contraste</button>
-      <button class="btn" id="btnCopyMermaid" title="Copiar código Mermaid">ðŸ“‹ Mermaid</button>
-      <button class="btn" id="btnCopyMd" title="Copiar especificação em Markdown">ðŸ“ Markdown</button>
-      <button class="btn btn-primary" id="btnDownloadSvg" title="Baixar diagrama SVG">ðŸ’¾ Baixar SVG</button>
+      <button class="btn" id="btnHighContrast" aria-pressed="false" title="Alternar Alto Contraste (WCAG AAA)">🌓 Alto Contraste</button>
+      <button class="btn" id="btnCopyMermaid" title="Copiar código Mermaid">📋 Mermaid</button>
+      <button class="btn" id="btnCopyMd" title="Copiar especificação em Markdown">📝 Markdown</button>
+      <button class="btn btn-primary" id="btnDownloadSvg" title="Baixar diagrama SVG">💾 Baixar SVG</button>
     </div>
   </header>
 
@@ -888,16 +888,16 @@ export function activate(context: vscode.ExtensionContext): void {
 
   <nav class="controls-bar" aria-label="Controles e Filtros de Arquitetura">
     <div class="tabs" role="tablist">
-      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="geral">ðŸŒ Arquitetura Geral</button>
-      <button class="tab-btn" role="tab" aria-selected="false" data-tab="entidades">ðŸ“¦ Entidades (${dados.elementos.filter(e => e.tipo === 'ESTRUTURA').length})</button>
-      <button class="tab-btn" role="tab" aria-selected="false" data-tab="regras">ðŸ›¡ï¸ Regras DDD (${dados.elementos.filter(e => e.tipo === 'REGRA').length})</button>
-      <button class="tab-btn" role="tab" aria-selected="false" data-tab="fluxo">ðŸš€ Pipelines & Fluxo</button>
-      <button class="tab-btn" role="tab" aria-selected="false" data-tab="acessivel">ðŸ“‘ Árvore Semântica (A11y)</button>
+      <button class="tab-btn active" role="tab" aria-selected="true" data-tab="geral">🌐 Arquitetura Geral</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="entidades">📦 Entidades (${dados.elementos.filter(e => e.tipo === 'ESTRUTURA').length})</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="regras">🛡️ Regras DDD (${dados.elementos.filter(e => e.tipo === 'REGRA').length})</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="fluxo">🚀 Pipelines & Fluxo</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="acessivel">📑 Árvore Semântica (A11y)</button>
     </div>
     <div class="search-box" role="search">
-      <span aria-hidden="true">ðŸ”</span>
+      <span aria-hidden="true">🔍</span>
       <input type="text" id="searchInput" placeholder="Buscar entidades, regras, contratos... ( / )" aria-label="Buscar elementos na arquitetura">
-      <button id="clearSearch" style="background:none; border:none; color:var(--muted); cursor:pointer;" aria-label="Limpar busca">âœ•</button>
+      <button id="clearSearch" style="background:none; border:none; color:var(--muted); cursor:pointer;" aria-label="Limpar busca">✕</button>
     </div>
   </nav>
 
@@ -907,26 +907,26 @@ export function activate(context: vscode.ExtensionContext): void {
 
     <!-- HUD de Navegação Acessível -->
     <div class="hud-controls" role="toolbar" aria-label="Navegação e Zoom do Diagrama">
-      <button class="hud-btn" id="btnZoomIn" title="Aumentar Zoom ( + )" aria-label="Aumentar Zoom">ï¼‹</button>
-      <button class="hud-btn" id="btnZoomOut" title="Diminuir Zoom ( - )" aria-label="Diminuir Zoom">ï¼</button>
+      <button class="hud-btn" id="btnZoomIn" title="Aumentar Zoom ( + )" aria-label="Aumentar Zoom">+</button>
+      <button class="hud-btn" id="btnZoomOut" title="Diminuir Zoom ( - )" aria-label="Diminuir Zoom">ï¼</button>
       <button class="hud-btn" id="btnResetZoom" title="Tamanho Real 100% ( 0 )" aria-label="Tamanho 100%">1:1</button>
-      <button class="hud-btn" id="btnFitScreen" title="Ajustar à Tela ( F )" aria-label="Ajustar à Tela">â›¶</button>
-      <button class="hud-btn" id="btnCenter" title="Centralizar Posição" aria-label="Centralizar Posição">âŸ²</button>
+      <button class="hud-btn" id="btnFitScreen" title="Ajustar à Tela ( F )" aria-label="Ajustar à Tela">⛶</button>
+      <button class="hud-btn" id="btnCenter" title="Centralizar Posição" aria-label="Centralizar Posição">⟲</button>
     </div>
 
     <!-- Árvore Acessível Textual -->
     <div class="accessible-tree" id="accessibleTree" role="tabpanel" aria-label="Visualização em Árvore Acessível">
-      <h2 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--accent);">ðŸ“‹ Estrutura Semântica e Rastreabilidade Completa</h2>
+      <h2 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--accent);">📋 Estrutura Semântica e Rastreabilidade Completa</h2>
       ${dados.elementos.map(el => `
         <article class="tree-card" tabindex="0">
           <h3>
-            <span>${el.tipo === 'ESTRUTURA' ? 'ðŸ“¦' : el.tipo === 'REGRA' ? 'âš–ï¸' : el.tipo === 'PIPELINE' ? 'ðŸ”„' : 'ðŸš€'} ${el.nome}</span>
+            <span>${el.tipo === 'ESTRUTURA' ? '📦' : el.tipo === 'REGRA' ? '⚖️' : el.tipo === 'PIPELINE' ? '🔄' : '🚀'} ${el.nome}</span>
             <span class="badge">${el.tipo}</span>
           </h3>
           ${el.linha ? `<p style="font-size:0.75rem; color:var(--muted); margin-bottom:4px;">Declarado na Linha <strong>${el.linha}</strong></p>` : ''}
           ${el.detalhes.requisito ? `<p><strong>Rastreio Requisito:</strong> <code>${el.detalhes.requisito}</code></p>` : ''}
           ${el.detalhes.idRegra ? `<p><strong>ID da Regra:</strong> <code>${el.detalhes.idRegra}</code></p>` : ''}
-          ${el.detalhes.idempotente ? `<p><strong>Garantia:</strong> ðŸ›¡ï¸ IDEMPOTENTE</p>` : ''}
+          ${el.detalhes.idempotente ? `<p><strong>Garantia:</strong> 🛡️ IDEMPOTENTE</p>` : ''}
           ${el.detalhes.campos && el.detalhes.campos.length > 0 ? `
             <div style="margin-top:6px;"><strong>Campos:</strong>
               <ul>${el.detalhes.campos.map(c => `<li><code>${c.nome}: ${c.tipo}</code></li>`).join('')}</ul>
@@ -943,7 +943,7 @@ export function activate(context: vscode.ExtensionContext): void {
             <div style="margin-top:6px; color:#34d399;"><strong>Contrato de Saída (GARANTE):</strong>
               <ul>${el.detalhes.posCondicoes.map(ga => `<li><code>GARANTE ${ga}</code></li>`).join('')}</ul>
             </div>` : ''}
-          ${el.linha ? `<button class="btn" style="margin-top:8px;" onclick="irParaLinha(${el.linha})">ðŸŽ¯ Ir para o Código-Fonte (Linha ${el.linha})</button>` : ''}
+          ${el.linha ? `<button class="btn" style="margin-top:8px;" onclick="irParaLinha(${el.linha})">🎯 Ir para o Código-Fonte (Linha ${el.linha})</button>` : ''}
         </article>
       `).join('')}
     </div>
@@ -953,7 +953,7 @@ export function activate(context: vscode.ExtensionContext): void {
   <aside class="drawer" id="elementDrawer" role="dialog" aria-labelledby="drawerTitle" aria-modal="true" aria-hidden="true">
     <div class="drawer-header">
       <h3 id="drawerTitle">Detalhes da Arquitetura</h3>
-      <button class="drawer-close" id="drawerClose" aria-label="Fechar Detalhes">âœ•</button>
+      <button class="drawer-close" id="drawerClose" aria-label="Fechar Detalhes">✕</button>
     </div>
     <div id="drawerContent"></div>
   </aside>
@@ -1002,10 +1002,10 @@ export function activate(context: vscode.ExtensionContext): void {
       } catch (err) {
         console.error('Erro ao renderizar diagrama Mermaid:', err);
         canvas.innerHTML = '<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px; text-align:center; color:#f87171;">' +
-          '<div style="font-size:2.5rem; margin-bottom:12px;">âš ï¸</div>' +
+          '<div style="font-size:2.5rem; margin-bottom:12px;">⚠️</div>' +
           '<h3 style="font-size:1.1rem; color:#fca5a5; margin-bottom:8px;">Não foi possível renderizar o diagrama</h3>' +
           '<p style="font-size:0.82rem; color:var(--muted); max-width:480px; margin-bottom:16px; font-family:monospace; background:rgba(0,0,0,0.3); padding:10px; border-radius:6px; border:1px solid var(--border);">' + (err.message || err) + '</p>' +
-          '<button class="btn" id="btnCopiarMermaidFalha">ðŸ“‹ Copiar Código Mermaid</button>' +
+          '<button class="btn" id="btnCopiarMermaidFalha">📋 Copiar Código Mermaid</button>' +
         '</div>';
         const btnFalha = document.getElementById('btnCopiarMermaidFalha');
         if (btnFalha) {
@@ -1152,36 +1152,36 @@ export function activate(context: vscode.ExtensionContext): void {
       html += '</div>';
 
       if (el.detalhes.requisito) {
-        html += '<div class="drawer-section"><h4>ðŸ“‹ Rastreio de Requisito</h4><p><code>' + el.detalhes.requisito + '</code></p></div>';
+        html += '<div class="drawer-section"><h4>📋 Rastreio de Requisito</h4><p><code>' + el.detalhes.requisito + '</code></p></div>';
       }
       if (el.detalhes.idRegra) {
-        html += '<div class="drawer-section"><h4>âš–ï¸ Identificador da Regra</h4><p><code>' + el.detalhes.idRegra + '</code></p></div>';
+        html += '<div class="drawer-section"><h4>⚖️ Identificador da Regra</h4><p><code>' + el.detalhes.idRegra + '</code></p></div>';
       }
       if (el.detalhes.idempotente) {
-        html += '<div class="drawer-section"><h4>ðŸ›¡ï¸ Garantia de Idempotência</h4><p>Sim — Operação com tolerância total a repetições sem efeitos colaterais.</p></div>';
+        html += '<div class="drawer-section"><h4>ðŸ›¡ï¸ Garantia de Idempotência</h4><p>Sim — Operação com tolerância total a repetições sem efeitos colaterais.</p></div>';
       }
       if (el.detalhes.campos && el.detalhes.campos.length > 0) {
-        html += '<div class="drawer-section"><h4>ðŸ“¦ Campos da Estrutura</h4><ul>';
+        html += '<div class="drawer-section"><h4>📦 Campos da Estrutura</h4><ul>';
         el.detalhes.campos.forEach(c => { html += '<li><code>' + c.nome + ': ' + c.tipo + '</code></li>'; });
         html += '</ul></div>';
       }
       if (el.detalhes.invariantes && el.detalhes.invariantes.length > 0) {
-        html += '<div class="drawer-section" style="border-left:3px solid #f43f5e;"><h4>âš ï¸ Invariantes Formais</h4><ul>';
+        html += '<div class="drawer-section" style="border-left:3px solid #f43f5e;"><h4>⚠️ Invariantes Formais</h4><ul>';
         el.detalhes.invariantes.forEach(inv => { html += '<li><code>INVARIANTE ' + inv + '</code></li>'; });
         html += '</ul></div>';
       }
       if (el.detalhes.preCondicoes && el.detalhes.preCondicoes.length > 0) {
-        html += '<div class="drawer-section" style="border-left:3px solid #a78bfa;"><h4>ðŸ›¡ï¸ Pré-Condições (EXIGE)</h4><ul>';
+        html += '<div class="drawer-section" style="border-left:3px solid #a78bfa;"><h4>🛡️ Pré-Condições (EXIGE)</h4><ul>';
         el.detalhes.preCondicoes.forEach(ex => { html += '<li><code>EXIGE ' + ex + '</code></li>'; });
         html += '</ul></div>';
       }
       if (el.detalhes.posCondicoes && el.detalhes.posCondicoes.length > 0) {
-        html += '<div class="drawer-section" style="border-left:3px solid #34d399;"><h4>âœ… Pós-Condições (GARANTE)</h4><ul>';
+        html += '<div class="drawer-section" style="border-left:3px solid #34d399;"><h4>✅ Pós-Condições (GARANTE)</h4><ul>';
         el.detalhes.posCondicoes.forEach(ga => { html += '<li><code>GARANTE ' + ga + '</code></li>'; });
         html += '</ul></div>';
       }
       if (el.detalhes.operacoes && el.detalhes.operacoes.length > 0) {
-        html += '<div class="drawer-section"><h4>âš¡ Operações</h4><ul>';
+        html += '<div class="drawer-section"><h4>⚡ Operações</h4><ul>';
         el.detalhes.operacoes.forEach(op => {
           html += '<li><code>' + (op.idempotente ? 'IDEMPOTENTE ' : '') + op.nome + '(' + op.params + ')' + (op.retorno ? ' : ' + op.retorno : '') + '</code></li>';
         });
@@ -1189,7 +1189,7 @@ export function activate(context: vscode.ExtensionContext): void {
       }
 
       if (el.linha) {
-        html += '<button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:10px;" onclick="irParaLinha(' + el.linha + ')">ðŸŽ¯ Navegar para Linha ' + el.linha + ' no Editor</button>';
+        html += '<button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:10px;" onclick="irParaLinha(' + el.linha + ')">🎯 Navegar para Linha ' + el.linha + ' no Editor</button>';
       }
 
       drawerContent.innerHTML = html;
@@ -1419,7 +1419,7 @@ export function activate(context: vscode.ExtensionContext): void {
 <body>
   <div class="window-card">
     <div class="window-header">
-      <h2>ðŸ–¥ï¸ ${titulo}</h2>
+      <h2>🖥️ ${titulo}</h2>
       <span class="badge">Live Preview Glassmorphism</span>
     </div>
     <div class="window-body">
@@ -1432,8 +1432,8 @@ export function activate(context: vscode.ExtensionContext): void {
       
       <div class="btn-group">
         ${botoes.length > 0 ? botoes.map((b, idx) => `
-          <button class="btn ${idx === 0 ? 'btn-primary' : 'btn-secondary'}" onclick="registrarClique('${b}')">â–¶ ${b}</button>
-        `).join('') : '<button class="btn btn-primary">â–¶ Executar Ação</button>'}
+          <button class="btn ${idx === 0 ? 'btn-primary' : 'btn-secondary'}" onclick="registrarClique('${b}')">▶ ${b}</button>
+        `).join('') : '<button class="btn btn-primary">▶ Executar Ação</button>'}
       </div>
     </div>
   </div>
@@ -1661,7 +1661,7 @@ export function activate(context: vscode.ExtensionContext): void {
       if (mConf) metaChildren.push(new ThzCockpitItem('Conformidade', vscode.TreeItemCollapsibleState.None, mConf[1], 'verified'));
 
       if (metaChildren.length > 0) {
-        items.push(new ThzCockpitItem('ðŸ›ï¸ Metadados de Arquitetura (ISO 42010)', vscode.TreeItemCollapsibleState.Expanded, `${metaChildren.length} atributo(s)`, 'circuit-board', undefined, undefined, metaChildren));
+        items.push(new ThzCockpitItem('Metadados de Arquitetura (ISO 42010)', vscode.TreeItemCollapsibleState.Expanded, `${metaChildren.length} atributo(s)`, 'circuit-board', undefined, undefined, metaChildren));
       }
 
       // Extração de Estruturas
@@ -1689,7 +1689,7 @@ export function activate(context: vscode.ExtensionContext): void {
             const subItens = [...estAtual.campos, ...estAtual.invariantes];
             const tag = estAtual.soa ? 'SoA / SIMD' : `${estAtual.campos.length} campo(s)`;
             estrChildren.push(new ThzCockpitItem(
-              `ðŸ“¦ ${estAtual.nome}`,
+              estAtual.nome,
               subItens.length > 0 ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None,
               tag,
               'symbol-structure',
@@ -1702,7 +1702,7 @@ export function activate(context: vscode.ExtensionContext): void {
         }
       }
       if (estrChildren.length > 0) {
-        items.push(new ThzCockpitItem('ðŸ“¦ Entidades & Estruturas de Dados', vscode.TreeItemCollapsibleState.Expanded, `${estrChildren.length} modelo(s)`, 'database', undefined, undefined, estrChildren));
+        items.push(new ThzCockpitItem('📦 Entidades & Estruturas de Dados', vscode.TreeItemCollapsibleState.Expanded, `${estrChildren.length} modelo(s)`, 'database', undefined, undefined, estrChildren));
       }
 
       // Extração de Regras e Contratos DDD
@@ -1723,35 +1723,35 @@ export function activate(context: vscode.ExtensionContext): void {
           const mReq = l.match(/RASTREIO_REQUISITO\s*:\s*"([^"]+)"/);
           if (mReq) {
             regraAtual.req = mReq[1];
-            regraAtual.subItens.push(new ThzCockpitItem(`ðŸ“‹ Requisito: ${mReq[1]}`, vscode.TreeItemCollapsibleState.None, 'Rastreabilidade', 'bookmark', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
+            regraAtual.subItens.push(new ThzCockpitItem(`Requisito: ${mReq[1]}`, vscode.TreeItemCollapsibleState.None, 'Rastreabilidade', 'bookmark', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
           }
           const mIdemp = l.match(/IDEMPOTENTE/);
           if (mIdemp) {
             regraAtual.idemp = true;
-            regraAtual.subItens.push(new ThzCockpitItem('ðŸ›¡ï¸ Garantia: IDEMPOTENTE', vscode.TreeItemCollapsibleState.None, 'Tolerância a Repetições', 'shield', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
+            regraAtual.subItens.push(new ThzCockpitItem('ðŸ›¡ï¸ Garantia: IDEMPOTENTE', vscode.TreeItemCollapsibleState.None, 'Tolerância a Repetições', 'shield', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
           }
           const mExige = l.match(/^\s*EXIGE\s+(.+)/);
           if (mExige) {
-            regraAtual.subItens.push(new ThzCockpitItem(`ðŸ›¡ï¸ EXIGE ${mExige[1].trim()}`, vscode.TreeItemCollapsibleState.None, 'Pré-Condição', 'lock', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
+            regraAtual.subItens.push(new ThzCockpitItem(`EXIGE ${mExige[1].trim()}`, vscode.TreeItemCollapsibleState.None, 'Pré-Condição', 'lock', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
           }
           const mGarante = l.match(/^\s*GARANTE\s+(.+)/);
           if (mGarante) {
-            regraAtual.subItens.push(new ThzCockpitItem(`âœ… GARANTE ${mGarante[1].trim()}`, vscode.TreeItemCollapsibleState.None, 'Pós-Condição', 'pass-filled', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
+            regraAtual.subItens.push(new ThzCockpitItem(`GARANTE ${mGarante[1].trim()}`, vscode.TreeItemCollapsibleState.None, 'Pós-Condição', 'pass-filled', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
           }
           const mOp = l.match(/^\s*OPERACAO\s+(?:(IDEMPOTENTE)\s+)?([A-Za-z0-9_]+)\s*\((.*?)\)(?:\s*:\s*([A-Za-z0-9_<>[\]]+))?/);
           if (mOp) {
-            regraAtual.subItens.push(new ThzCockpitItem(`âš¡ ${mOp[2]}(${mOp[3] || ''})`, vscode.TreeItemCollapsibleState.None, mOp[4] || 'void', 'symbol-method', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
+            regraAtual.subItens.push(new ThzCockpitItem(`${mOp[2]}(${mOp[3] || ''})`, vscode.TreeItemCollapsibleState.None, mOp[4] || 'void', 'symbol-method', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
           }
 
           if (l.match(/^\s*FIM_REGRA_NEGOCIO/)) {
             const desc = [regraAtual.idRegra, regraAtual.req].filter(Boolean).join(' | ') || `${regraAtual.subItens.length} contrato(s)`;
             regrasChildren.push(new ThzCockpitItem(
-              `âš–ï¸ ${regraAtual.nome}`,
+              regraAtual.nome,
               regraAtual.subItens.length > 0 ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None,
               desc,
               'law',
               { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [regraAtual.linha, filePath] },
-              `Regra de Negócio DDD ${regraAtual.nome}`,
+              regraAtual.nome,
               regraAtual.subItens
             ));
             regraAtual = null;
@@ -1759,7 +1759,7 @@ export function activate(context: vscode.ExtensionContext): void {
         }
       }
       if (regrasChildren.length > 0) {
-        items.push(new ThzCockpitItem('âš–ï¸ Regras de Negócio & Contratos (DDD)', vscode.TreeItemCollapsibleState.Expanded, `${regrasChildren.length} regra(s)`, 'shield', undefined, undefined, regrasChildren));
+        items.push(new ThzCockpitItem('Regras de Negócio & Contratos (DDD)', vscode.TreeItemCollapsibleState.Expanded, `${regrasChildren.length} regra(s)`, 'shield', undefined, undefined, regrasChildren));
       }
 
       // Extração de Procedimentos Globais
@@ -1770,16 +1770,16 @@ export function activate(context: vscode.ExtensionContext): void {
         const mProc = l.match(/^\s*PROCEDIMENTO\s+(?:(IDEMPOTENTE)\s+)?([A-Za-z0-9_]+)\s*\((.*?)\)/);
         if (mProc) {
           procsChildren.push(new ThzCockpitItem(
-            `ðŸš€ ${mProc[2]}(${mProc[3] || ''})`,
+            `${mProc[2]}(${mProc[3] || ''})`,
             vscode.TreeItemCollapsibleState.None,
-            mProc[1] ? 'ðŸ›¡ï¸ IDEMPOTENTE' : 'Procedimento',
+            mProc[1] ? 'IDEMPOTENTE' : 'Procedimento',
             'symbol-method',
             { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }
           ));
         }
       }
       if (procsChildren.length > 0) {
-        items.push(new ThzCockpitItem('ðŸš€ Procedimentos de Execução', vscode.TreeItemCollapsibleState.Expanded, `${procsChildren.length} procedimento(s)`, 'run', undefined, undefined, procsChildren));
+        items.push(new ThzCockpitItem('Procedimentos de Execução', vscode.TreeItemCollapsibleState.Expanded, `${procsChildren.length} procedimento(s)`, 'run', undefined, undefined, procsChildren));
       }
 
       // Extração de Pipelines
@@ -1794,14 +1794,14 @@ export function activate(context: vscode.ExtensionContext): void {
         }
         if (pipeAtual) {
           const mFonte = l.match(/FONTE_ENTRADA\s*:\s*(.+)/);
-          if (mFonte) pipeAtual.subItens.push(new ThzCockpitItem(`ðŸ“¥ Entrada: ${mFonte[1].trim()}`, vscode.TreeItemCollapsibleState.None, undefined, 'arrow-down'));
+          if (mFonte) pipeAtual.subItens.push(new ThzCockpitItem(`Entrada: ${mFonte[1].trim()}`, vscode.TreeItemCollapsibleState.None, undefined, 'arrow-down'));
           const mTransf = l.match(/TRANSFORMACAO\s*:\s*(.+)/);
-          if (mTransf) pipeAtual.subItens.push(new ThzCockpitItem(`âš™ï¸ Transform: ${mTransf[1].trim()}`, vscode.TreeItemCollapsibleState.None, undefined, 'gear'));
+          if (mTransf) pipeAtual.subItens.push(new ThzCockpitItem(`Transform: ${mTransf[1].trim()}`, vscode.TreeItemCollapsibleState.None, undefined, 'gear'));
           const mDest = l.match(/DESTINO_SAIDA\s*:\s*(.+)/);
-          if (mDest) pipeAtual.subItens.push(new ThzCockpitItem(`ðŸ“¤ Saída: ${mDest[1].trim()}`, vscode.TreeItemCollapsibleState.None, undefined, 'arrow-up'));
+          if (mDest) pipeAtual.subItens.push(new ThzCockpitItem(`Saída: ${mDest[1].trim()}`, vscode.TreeItemCollapsibleState.None, undefined, 'arrow-up'));
           if (l.match(/^\s*FIM_PIPELINE/)) {
             pipeChildren.push(new ThzCockpitItem(
-              `ðŸ”„ Pipeline: ${pipeAtual.nome}`,
+              `Pipeline: ${pipeAtual.nome}`,
               pipeAtual.subItens.length > 0 ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None,
               undefined,
               'sync',
@@ -1814,7 +1814,7 @@ export function activate(context: vscode.ExtensionContext): void {
         }
       }
       if (pipeChildren.length > 0) {
-        items.push(new ThzCockpitItem('ðŸ”„ Pipelines de Dados', vscode.TreeItemCollapsibleState.Expanded, `${pipeChildren.length} pipeline(s)`, 'sync', undefined, undefined, pipeChildren));
+        items.push(new ThzCockpitItem('Pipelines de Dados', vscode.TreeItemCollapsibleState.Expanded, `${pipeChildren.length} pipeline(s)`, 'sync', undefined, undefined, pipeChildren));
       }
 
       // Extração de Enumerações
@@ -1826,7 +1826,7 @@ export function activate(context: vscode.ExtensionContext): void {
         if (mEnum) {
           const vals = l.includes(':') ? l.split(':')[1].split(',').map(s => s.trim()).join(' | ') : '';
           enumChildren.push(new ThzCockpitItem(
-            `ðŸ“‘ ${mEnum[1]}`,
+            mEnum[1],
             vscode.TreeItemCollapsibleState.None,
             vals,
             'symbol-enum',
@@ -1835,7 +1835,7 @@ export function activate(context: vscode.ExtensionContext): void {
         }
       }
       if (enumChildren.length > 0) {
-        items.push(new ThzCockpitItem('ðŸ“‘ Enumerações de Domínio', vscode.TreeItemCollapsibleState.Collapsed, `${enumChildren.length} enum(s)`, 'symbol-enum', undefined, undefined, enumChildren));
+        items.push(new ThzCockpitItem('Enumerações de Domínio', vscode.TreeItemCollapsibleState.Collapsed, `${enumChildren.length} enum(s)`, 'symbol-enum', undefined, undefined, enumChildren));
       }
 
       // Extração de Telas (.thzui / PROGRAMA VISUAL)
@@ -1844,12 +1844,12 @@ export function activate(context: vscode.ExtensionContext): void {
         const l = linhas[i];
         const numLinha = i + 1;
         const mBtn = l.match(/^\s*(?:BOTAO|botao|btn)\s*\(\s*"([^"]+)"/i);
-        if (mBtn) uiChildren.push(new ThzCockpitItem(`ðŸ”˜ Botão "${mBtn[1]}"`, vscode.TreeItemCollapsibleState.None, undefined, 'symbol-event', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
+        if (mBtn) uiChildren.push(new ThzCockpitItem(`Botão "${mBtn[1]}"`, vscode.TreeItemCollapsibleState.None, undefined, 'symbol-event', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
         const mTela = l.match(/^\s*(?:TELA|PROGRAMA VISUAL)\s+([A-Za-z0-9_]+)/);
-        if (mTela) uiChildren.push(new ThzCockpitItem(`ðŸ–¼ï¸ Tela: ${mTela[1]}`, vscode.TreeItemCollapsibleState.None, undefined, 'browser', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
+        if (mTela) uiChildren.push(new ThzCockpitItem(`Tela: ${mTela[1]}`, vscode.TreeItemCollapsibleState.None, undefined, 'browser', { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }));
       }
       if (uiChildren.length > 0) {
-        items.push(new ThzCockpitItem('ðŸŽ¨ Interfaces Declarativas (UI)', vscode.TreeItemCollapsibleState.Expanded, `${uiChildren.length} componente(s)`, 'browser', undefined, undefined, uiChildren));
+        items.push(new ThzCockpitItem('Interfaces Declarativas (UI)', vscode.TreeItemCollapsibleState.Expanded, `${uiChildren.length} componente(s)`, 'browser', undefined, undefined, uiChildren));
       }
 
       return Promise.resolve(items);
@@ -1878,14 +1878,14 @@ export function activate(context: vscode.ExtensionContext): void {
       }
 
       const exemplosDefinidos = [
-        { label: 'ðŸ’¼ Faturamento em Lote (SoA/SIMD)', path: resolverExemplo('faturamento.thz'), desc: 'faturamento.thz' },
-        { label: 'ðŸ›’ Gestão de Pedidos & DDD', path: resolverExemplo('pedidos.thz'), desc: 'pedidos.thz' },
-        { label: 'ðŸŽ¨ Showcase de Widgets GUI', path: resolverExemplo('showcase_widgets_gui.thz'), desc: 'showcase_widgets_gui.thz' },
-        { label: 'ðŸ’³ Simulador de Crédito & Finanças', path: resolverExemplo('simulador_credito_gui.thz'), desc: 'simulador_credito_gui.thz' },
-        { label: 'ðŸ·ï¸ THZ Studio IDE Declarativo', path: resolverExemplo('thz_studio_ide.thzui'), desc: 'thz_studio_ide.thzui' },
-        { label: 'ðŸ“¦ Padrão Result DDD', path: resolverExemplo(path.join('colecao', '07-resultado-ddd.thz')), desc: '07-resultado-ddd.thz' },
-        { label: 'âš¡ Vetorização SIMD (AVX2/512)', path: resolverExemplo(path.join('colecao', '08-vetorizado-simd.thz')), desc: '08-vetorizado-simd.thz' },
-        { label: 'ðŸ›¡ï¸ Idempotência em Larga Escala', path: resolverExemplo(path.join('colecao', '11-idempotencia-larga-escala.thz')), desc: '11-idempotencia-larga-escala.thz' }
+        { label: 'Faturamento em Lote (SoA/SIMD)', path: resolverExemplo('faturamento.thz'), desc: 'faturamento.thz' },
+        { label: 'Gestão de Pedidos & DDD', path: resolverExemplo('pedidos.thz'), desc: 'pedidos.thz' },
+        { label: 'Showcase de Widgets GUI', path: resolverExemplo('showcase_widgets_gui.thz'), desc: 'showcase_widgets_gui.thz' },
+        { label: 'Simulador de Crédito & Finanças', path: resolverExemplo('simulador_credito_gui.thz'), desc: 'simulador_credito_gui.thz' },
+        { label: 'THZ Studio IDE Declarativo', path: resolverExemplo('thz_studio_ide.thzui'), desc: 'thz_studio_ide.thzui' },
+        { label: 'Padrão Result DDD', path: resolverExemplo(path.join('colecao', '07-resultado-ddd.thz')), desc: '07-resultado-ddd.thz' },
+        { label: 'Vetorização SIMD (AVX2/512)', path: resolverExemplo(path.join('colecao', '08-vetorizado-simd.thz')), desc: '08-vetorizado-simd.thz' },
+        { label: 'Idempotência em Larga Escala', path: resolverExemplo(path.join('colecao', '11-idempotencia-larga-escala.thz')), desc: '11-idempotencia-larga-escala.thz' }
       ];
 
       const items = exemplosDefinidos.map(ex => {
@@ -1921,7 +1921,7 @@ export function activate(context: vscode.ExtensionContext): void {
       const isEstrito = vscode.workspace.getConfiguration('thz-lang').get<boolean>('lintEstrito', false);
 
       const items: ThzCockpitItem[] = [
-        new ThzCockpitItem('Versão do Engine', vscode.TreeItemCollapsibleState.None, 'THZ-LANG ﻿0.4.0', 'tag'),
+        new ThzCockpitItem('Versão do Engine', vscode.TreeItemCollapsibleState.None, 'THZ-LANG 0.4.0', 'tag'),
         new ThzCockpitItem('Language Server (LSP)', vscode.TreeItemCollapsibleState.None, client ? 'Conectado (Java 25)' : 'Inativo', 'server-process'),
         new ThzCockpitItem('Backend de Compilação', vscode.TreeItemCollapsibleState.None, 'LLVM Clang AOT / GraalVM', 'zap'),
         new ThzCockpitItem('Gerenciamento de Memória', vscode.TreeItemCollapsibleState.None, 'Arena Contígua O(1) (ISO TR 24772)', 'layers'),
@@ -1929,7 +1929,7 @@ export function activate(context: vscode.ExtensionContext): void {
         new ThzCockpitItem(
           'Modo Estrito (Lint Restritivo)',
           vscode.TreeItemCollapsibleState.None,
-          isEstrito ? 'Ativado ðŸ›¡ï¸' : 'Desativado (Clique para alternar)',
+          isEstrito ? 'Ativado (Estrito)' : 'Desativado (Clique para alternar)',
           isEstrito ? 'pass-filled' : 'circle-outline',
           { command: 'thz.toggleLintEstrito', title: 'Alternar Modo Estrito' },
           'Exige metadados ISO 42010, SLO de latência, contratos EXIGE/GARANTE e rastreabilidade'
@@ -1994,7 +1994,7 @@ export function activate(context: vscode.ExtensionContext): void {
       const cfg = vscode.workspace.getConfiguration('thz-lang');
       const atual = cfg.get<boolean>('lintEstrito', false);
       await cfg.update('lintEstrito', !atual, vscode.ConfigurationTarget.Global);
-      vscode.window.showInformationMessage(`Modo Estrito THZ-LANG: ${!atual ? 'ATIVADO ðŸ›¡ï¸' : 'DESATIVADO'}`);
+      vscode.window.showInformationMessage(`Modo Estrito THZ-LANG: ${!atual ? 'ATIVADO (Estrito)' : 'DESATIVADO'}`);
       environmentProvider.refresh();
     })
   );
