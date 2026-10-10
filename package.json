@@ -2,7 +2,7 @@
   "name": "thz-lang",
   "displayName": "THZ-LANG",
   "description": "Language support for THZ-LANG (.thz) — LSP powered by Language Service Core (G1)",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "publisher": "thz-lang",
   "icon": "icon.png",
   "license": "MIT",
