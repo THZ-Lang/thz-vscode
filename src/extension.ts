@@ -1921,7 +1921,7 @@ export function activate(context: vscode.ExtensionContext): void {
       const isEstrito = vscode.workspace.getConfiguration('thz-lang').get<boolean>('lintEstrito', false);
 
       const items: ThzCockpitItem[] = [
-        new ThzCockpitItem('Versão do Engine', vscode.TreeItemCollapsibleState.None, 'THZ-LANG 0.4.0', 'tag'),
+        new ThzCockpitItem('Versão do Engine', vscode.TreeItemCollapsibleState.None, 'THZ-LANG 0.5.0', 'tag'),
         new ThzCockpitItem('Language Server (LSP)', vscode.TreeItemCollapsibleState.None, client ? 'Conectado (Java 25)' : 'Inativo', 'server-process'),
         new ThzCockpitItem('Backend de Compilação', vscode.TreeItemCollapsibleState.None, 'LLVM Clang AOT / GraalVM', 'zap'),
         new ThzCockpitItem('Gerenciamento de Memória', vscode.TreeItemCollapsibleState.None, 'Arena Contígua O(1) (ISO TR 24772)', 'layers'),
