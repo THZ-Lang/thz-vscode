@@ -16,6 +16,7 @@ Extensão oficial para **Visual Studio Code**, **Antigravity IDE** e ambientes c
 | **Navegação de Símbolos** | Outline hierárquico com `DocumentSymbol`, *Go-to-Definition* e busca de símbolos no workspace |
 | **Formatação Canônica** | Formatação idempotente automática ao salvar (`editor.formatOnSave`) ou via atalho `Shift+Alt+F` |
 | **Governança & IR** | Comandos integrados na Command Palette (`Ctrl+Shift+P`): `THZ: Mostrar Auditoria de Governança`, `THZ: Mostrar IR` e `THZ: Mostrar LLVM IR` |
+| **Interoperabilidade COBOL** | Suporte às 3 Variações: `BLOCO_COBOL` embutido com realce e CodeLens, ingestão de Copybooks (`.cpy`) e arquivos COBOL puros (`.cbl`, `.cob`), integrados ao Live Preview de Arquitetura Viva (Mermaid) e Outline |
 
 ---
 
@@ -58,14 +59,19 @@ powershell.exe -ExecutionPolicy Bypass -File scripts/build-vsix.ps1 -Instalar
 
 ```
 Extensions/thz-lsp-vscode/
+├── docs/ADRs/
+│   └── ADR-001-suporte-modulo-cobol-vscode.md # Decisão arquitetural de interop COBOL
 ├── syntaxes/
-│   └── thz.tmLanguage.json       # Gramática TextMate (Sintaxe canônica e dual moderna)
+│   ├── thz.tmLanguage.json       # Gramática TextMate THZ (inclui BLOCO_COBOL embutido)
+│   └── cobol.tmLanguage.json     # Gramática TextMate COBOL standalone (.cbl, .cob, .cpy)
 ├── server/
-│   └── thz-lsp-0.4.0.jar         # Servidor LSP Java 25 embutido
+│   └── thz-lsp.jar               # Servidor LSP Java 25 embutido
+├── snippets/
+│   └── thz.json                  # Snippets canônicos, DDD e COBOL interop
 ├── src/
-│   └── extension.ts              # Cliente LSP (LanguageClient) e ativação DAP
+│   └── extension.ts              # Cliente LSP, DAP, Cockpit, Live Preview e CodeLens
 ├── dist/
 │   └── extension.js              # Bundle compilado via esbuild
-├── language-configuration.json   # Pares de fechamento, recuos e comentários
+├── language-configuration.json   # Pares de fechamento, recuos (THZ e COBOL) e comentários
 └── package.json                  # Manifesto e declaração de comandos da extensão
 ```

@@ -76,9 +76,12 @@ export function activate(context: vscode.ExtensionContext): void {
   };
 
   const clientOptions: LanguageClientOptions = {
-    documentSelector: [{ scheme: 'file', language: 'thz' }],
+    documentSelector: [
+      { scheme: 'file', language: 'thz' },
+      { scheme: 'file', language: 'thz-cobol' }
+    ],
     synchronize: {
-      fileEvents: vscode.workspace.createFileSystemWatcher('**/*.thz'),
+      fileEvents: vscode.workspace.createFileSystemWatcher('**/*.{thz,thzui,cbl,cob,cpy}'),
     },
   };
 
@@ -183,7 +186,7 @@ export function activate(context: vscode.ExtensionContext): void {
   function executarNoTerminal(acao: 'run' | 'check', principal?: string): void {
     const ed = vscode.window.activeTextEditor;
     if (!ed) {
-      vscode.window.showInformationMessage('Abra um arquivo .thz para executar.');
+      vscode.window.showInformationMessage('Abra um arquivo .thz, .thzui ou .cbl para executar.');
       return;
     }
 
@@ -294,6 +297,62 @@ export function activate(context: vscode.ExtensionContext): void {
             })
           );
         }
+
+        // Bloco COBOL Embutido (Variação 1)
+        const matchCobol = line.match(/^\s*BLOCO_COBOL\b/i);
+        if (matchCobol) {
+          let progId = 'CALC_ROTINA';
+          for (let j = i + 1; j < Math.min(lines.length, i + 30); j++) {
+            const mId = lines[j].match(/^\s*PROGRAM-ID\.\s*([A-Za-z0-9_-]+)/i);
+            if (mId) { progId = mId[1]; break; }
+            if (lines[j].match(/^\s*FIM_BLOCO_COBOL\b/i)) break;
+          }
+          const range = new vscode.Range(i, 0, i, line.length);
+          lenses.push(
+            new vscode.CodeLens(range, {
+              title: `🏛️ Rotina COBOL: ${progId} (C-ABI / LLVM)`,
+              command: 'thz.previewArchitecture',
+            }),
+            new vscode.CodeLens(range, {
+              title: '📐 Ver Arquitetura',
+              command: 'thz.previewArchitecture',
+            }),
+            new vscode.CodeLens(range, {
+              title: '🛡️ Auditar Governança',
+              command: 'thz.showAudit',
+            })
+          );
+        }
+
+        // Importação de Copybook (Variação 2)
+        const matchCpy = line.match(/^\s*IMPORTAR_COPYBOOK\s+"([^"]+)"/i);
+        if (matchCpy) {
+          const nomeCpy = path.basename(matchCpy[1]);
+          const range = new vscode.Range(i, 0, i, line.length);
+          lenses.push(
+            new vscode.CodeLens(range, {
+              title: `📋 Copybook Mainframe: ${nomeCpy} (Off-Heap Zero-Copy)`,
+              command: 'thz.previewArchitecture',
+            })
+          );
+        }
+
+        // Standalone COBOL (Variação 3 - arquivos .cbl ou sem BLOCO_COBOL)
+        const matchStandaloneCobol = line.match(/^\s*PROGRAM-ID\.\s*([A-Za-z0-9_-]+)/i);
+        if (matchStandaloneCobol && !text.includes('BLOCO_COBOL')) {
+          const progId = matchStandaloneCobol[1];
+          const range = new vscode.Range(i, 0, i, line.length);
+          lenses.push(
+            new vscode.CodeLens(range, {
+              title: `▶ Executar THZ-COBOL Standalone (${progId})`,
+              command: 'thz.run',
+            }),
+            new vscode.CodeLens(range, {
+              title: '⚡ Inspecionar LLVM IR AOT',
+              command: 'thz.showLlvm',
+            })
+          );
+        }
       }
 
       return lenses;
@@ -301,7 +360,8 @@ export function activate(context: vscode.ExtensionContext): void {
   }
 
   context.subscriptions.push(
-    vscode.languages.registerCodeLensProvider({ language: 'thz', scheme: 'file' }, new ThzCodeLensProvider())
+    vscode.languages.registerCodeLensProvider({ language: 'thz', scheme: 'file' }, new ThzCodeLensProvider()),
+    vscode.languages.registerCodeLensProvider({ language: 'thz-cobol', scheme: 'file' }, new ThzCodeLensProvider())
   );
 
   // ==========================================================================
@@ -312,7 +372,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
   interface ElementoArquitetura {
     id: string;
-    tipo: 'MODULO' | 'ESTRUTURA' | 'ENUMERACAO' | 'REGRA' | 'OPERACAO' | 'PROCEDIMENTO' | 'PIPELINE' | 'CONTRATO' | 'INVARIANTE';
+    tipo: 'MODULO' | 'ESTRUTURA' | 'ENUMERACAO' | 'REGRA' | 'OPERACAO' | 'PROCEDIMENTO' | 'PIPELINE' | 'CONTRATO' | 'INVARIANTE' | 'BLOCO_COBOL' | 'COPYBOOK';
     nome: string;
     linha?: number;
     detalhes: {
@@ -336,6 +396,9 @@ export function activate(context: vscode.ExtensionContext): void {
       origemPipeline?: string;
       transformacaoPipeline?: string;
       destinoPipeline?: string;
+      linkageCampos?: string[];
+      copybookPath?: string;
+      chamadasCobol?: string[];
     };
   }
 
@@ -528,21 +591,84 @@ export function activate(context: vscode.ExtensionContext): void {
         }
       }
 
-      // PROCEDIMENTO
-      const mProc = l.match(/^\s*PROCEDIMENTO\s+(?:(IDEMPOTENTE)\s+)?([A-Za-z0-9_]+)\s*\((.*?)\)/);
-      if (mProc) {
-        elementos.push({
-          id: 'PROC_' + mProc[2],
-          tipo: 'PROCEDIMENTO',
-          nome: mProc[2],
-          linha: numLinha,
-          detalhes: {
-            idempotente: !!mProc[1],
-            operacoes: [{ nome: mProc[2], params: mProc[3] || 'vazio' }]
+        // PROCEDIMENTO
+        const mProc = l.match(/^\s*PROCEDIMENTO\s+(?:(IDEMPOTENTE)\s+)?([A-Za-z0-9_]+)\s*\((.*?)\)/);
+        if (mProc) {
+          elementos.push({
+            id: 'PROC_' + mProc[2],
+            tipo: 'PROCEDIMENTO',
+            nome: mProc[2],
+            linha: numLinha,
+            detalhes: {
+              idempotente: !!mProc[1],
+              operacoes: [{ nome: mProc[2], params: mProc[3] || 'vazio' }]
+            }
+          });
+        }
+
+        // BLOCO_COBOL (Variação 1)
+        const mBlocoCobol = l.match(/^\s*BLOCO_COBOL\b/i);
+        if (mBlocoCobol) {
+          let progId = 'CALC_ROTINA';
+          const linkage: string[] = [];
+          let dentroLinkage = false;
+          let j = i + 1;
+          while (j < linhas.length) {
+            const lj = linhas[j];
+            if (lj.match(/^\s*FIM_BLOCO_COBOL\b/i)) break;
+            const mId = lj.match(/^\s*PROGRAM-ID\.\s*([A-Za-z0-9_-]+)/i);
+            if (mId) progId = mId[1];
+            if (lj.match(/LINKAGE\s+SECTION/i)) dentroLinkage = true;
+            else if (lj.match(/PROCEDURE\s+DIVISION/i)) dentroLinkage = false;
+            if (dentroLinkage) {
+              const mCampo = lj.match(/^\s*01\s+([A-Za-z0-9_-]+)\s+PIC\s+([A-Za-z0-9()VvSs]+(?:\s+COMP-[0-9]+)?)/i);
+              if (mCampo) linkage.push(`${mCampo[1]} (${mCampo[2]})`);
+            }
+            j++;
           }
-        });
+          elementos.push({
+            id: 'COBOL_' + sanitizarId(progId),
+            tipo: 'BLOCO_COBOL',
+            nome: progId,
+            linha: numLinha,
+            detalhes: {
+              linkageCampos: linkage
+            }
+          });
+        }
+
+        // IMPORTAR_COPYBOOK (Variação 2)
+        const mCopybook = l.match(/^\s*IMPORTAR_COPYBOOK\s+"([^"]+)"/i);
+        if (mCopybook) {
+          const cpyPath = mCopybook[1];
+          const nomeCpy = path.basename(cpyPath);
+          elementos.push({
+            id: 'CPY_' + sanitizarId(nomeCpy),
+            tipo: 'COPYBOOK',
+            nome: nomeCpy,
+            linha: numLinha,
+            detalhes: { copybookPath: cpyPath }
+          });
+        }
+
+        // Rastrear invocações COBOL.<rotina>
+        const mCallCobol = l.match(/\bCOBOL\.([A-Za-z0-9_]+)\b/);
+        if (mCallCobol) {
+          if (regraAtual) {
+            if (!regraAtual.detalhes.chamadasCobol) regraAtual.detalhes.chamadasCobol = [];
+            if (!regraAtual.detalhes.chamadasCobol.includes(mCallCobol[1])) {
+              regraAtual.detalhes.chamadasCobol.push(mCallCobol[1]);
+            }
+          }
+          const ultimoProc = elementos.filter(e => e.tipo === 'PROCEDIMENTO').pop();
+          if (ultimoProc && !regraAtual) {
+            if (!ultimoProc.detalhes.chamadasCobol) ultimoProc.detalhes.chamadasCobol = [];
+            if (!ultimoProc.detalhes.chamadasCobol.includes(mCallCobol[1])) {
+              ultimoProc.detalhes.chamadasCobol.push(mCallCobol[1]);
+            }
+          }
+        }
       }
-    }
 
     function sanitizarId(s: string): string {
       return s ? s.replace(/[^a-zA-Z0-9_]/g, '_') : 'node';
@@ -626,7 +752,44 @@ export function activate(context: vscode.ExtensionContext): void {
       diagGeral += `        end\n`;
     }
 
+    const cobolNodes = elementos.filter(e => e.tipo === 'BLOCO_COBOL' || e.tipo === 'COPYBOOK');
+    if (cobolNodes.length > 0) {
+      diagGeral += `        subgraph InteropCOBOL ["🏛️ Interoperabilidade COBOL (C-ABI & LLVM AOT)"]\n`;
+      for (const cb of cobolNodes) {
+        if (cb.tipo === 'BLOCO_COBOL') {
+          const lkDesc = cb.detalhes.linkageCampos && cb.detalhes.linkageCampos.length > 0
+            ? `<br/><small>Linkage: ${escaparMermaidTexto(cb.detalhes.linkageCampos.join(', '))}</small>`
+            : '<br/><small>Zero-Copy C-ABI</small>';
+          diagGeral += `            ${cb.id}["🏛️ COBOL: ${escaparMermaidTexto(cb.nome)}${lkDesc}"]\n`;
+        } else {
+          diagGeral += `            ${cb.id}["📋 Copybook: ${escaparMermaidTexto(cb.nome)}<br/><small>Off-Heap Panama FFM</small>"]\n`;
+        }
+      }
+      diagGeral += `        end\n`;
+    }
+
     diagGeral += `    end\n`;
+
+    // Conexões de chamada COBOL a partir de Regras e Procedimentos
+    for (const r of regras) {
+      if (r.detalhes.chamadasCobol) {
+        for (const call of r.detalhes.chamadasCobol) {
+          diagGeral += `    ${r.id} -.->|Invocação C-ABI| COBOL_${sanitizarId(call)}\n`;
+        }
+      }
+    }
+    for (const p of procs) {
+      if (p.detalhes.chamadasCobol) {
+        for (const call of p.detalhes.chamadasCobol) {
+          diagGeral += `    ${p.id} -.->|Invocação C-ABI| COBOL_${sanitizarId(call)}\n`;
+        }
+      }
+    }
+
+    diagGeral += '    classDef cobol fill:#0284c7,stroke:#38bdf8,stroke-width:2px,color:#f0f9ff;\n';
+    for (const cb of cobolNodes) {
+      diagGeral += `    class ${cb.id} cobol;\n`;
+    }
 
     for (const e of ests) {
       diagGeral += `    class ${e.id} entity;\n`;
@@ -707,6 +870,13 @@ export function activate(context: vscode.ExtensionContext): void {
           diagRegras += `    class ${gaId} gate;\n`;
         }
       }
+      if (r.detalhes.chamadasCobol) {
+        for (const call of r.detalhes.chamadasCobol) {
+          const callId = sanitizarId('CALL_' + r.nome + '_' + call);
+          diagRegras += `    ${r.id} -.->|Invocação C-ABI| ${callId}["🏛️ COBOL: ${escaparMermaidTexto(call)}()"]\n`;
+          diagRegras += `    class ${callId} cobol;\n`;
+        }
+      }
     }
     if (regras.length === 0) diagRegras += '    SemRegras["Nenhuma Regra Declarada"]\n';
 
@@ -714,6 +884,7 @@ export function activate(context: vscode.ExtensionContext): void {
     let diagFluxo = 'graph LR\n';
     diagFluxo += '    classDef pipe fill:#134e4a,stroke:#2dd4bf,stroke-width:2px,color:#f0fdf4;\n';
     diagFluxo += '    classDef proc fill:#1e3a8a,stroke:#60a5fa,stroke-width:2px,color:#eff6ff;\n';
+    diagFluxo += '    classDef cobol fill:#0284c7,stroke:#38bdf8,stroke-width:2px,color:#f0f9ff;\n';
     for (const p of pipes) {
       const org = p.detalhes.origemPipeline ? escaparMermaidTexto(p.detalhes.origemPipeline) : 'Entrada';
       const dst = p.detalhes.destinoPipeline ? escaparMermaidTexto(p.detalhes.destinoPipeline) : 'Saída';
@@ -724,7 +895,13 @@ export function activate(context: vscode.ExtensionContext): void {
       diagFluxo += `    ${pr.id}["🚀 Procedimento: ${escaparMermaidTexto(pr.nome)}()"]\n`;
       diagFluxo += `    class ${pr.id} proc;\n`;
     }
-    if (pipes.length === 0 && procs.length === 0) diagFluxo += '    SemFluxo["Nenhum Pipeline ou Procedimento Declarado"]\n';
+    for (const cb of cobolNodes) {
+      if (cb.tipo === 'BLOCO_COBOL') {
+        diagFluxo += `    ${cb.id}["🏛️ Rotina COBOL: ${escaparMermaidTexto(cb.nome)}<br/><small>C-ABI Zero-Copy</small>"]\n`;
+        diagFluxo += `    class ${cb.id} cobol;\n`;
+      }
+    }
+    if (pipes.length === 0 && procs.length === 0 && cobolNodes.length === 0) diagFluxo += '    SemFluxo["Nenhum Pipeline ou Procedimento Declarado"]\n';
 
     return {
       nomeModulo,
@@ -1188,6 +1365,18 @@ export function activate(context: vscode.ExtensionContext): void {
         html += '</ul></div>';
       }
 
+      if (el.tipo === 'BLOCO_COBOL') {
+        html += '<div class="drawer-section" style="border-left:3px solid #38bdf8;"><h4>🏛️ Rotina COBOL Embutida</h4><p>Compilação direta AOT para LLVM IR e invocação nativa C-ABI padrão (Zero JVM em produção).</p></div>';
+        if (el.detalhes.linkageCampos && el.detalhes.linkageCampos.length > 0) {
+          html += '<div class="drawer-section"><h4>🔗 Linkage Section (Memória Compartilhada)</h4><ul>';
+          el.detalhes.linkageCampos.forEach(p => { html += '<li><code>' + p + '</code></li>'; });
+          html += '</ul></div>';
+        }
+      }
+      if (el.tipo === 'COPYBOOK') {
+        html += '<div class="drawer-section" style="border-left:3px solid #38bdf8;"><h4>📋 Contrato Copybook Mainframe</h4><p>Arquivo: <code>' + (el.detalhes.copybookPath || el.nome) + '</code></p><p>Transpilação de tipos BCD (COMP-3), PIC X e condições 88 para ESTRUTURAS tipadas nativas.</p></div>';
+      }
+
       if (el.linha) {
         html += '<button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:10px;" onclick="irParaLinha(' + el.linha + ')">🎯 Navegar para Linha ' + el.linha + ' no Editor</button>';
       }
@@ -1621,19 +1810,23 @@ export function activate(context: vscode.ExtensionContext): void {
       const ed = vscode.window.activeTextEditor;
       const isThzFile = ed && (
         ed.document.languageId === 'thz' ||
+        ed.document.languageId === 'thz-cobol' ||
         ed.document.fileName.endsWith('.thz') ||
-        ed.document.fileName.endsWith('.thzui')
+        ed.document.fileName.endsWith('.thzui') ||
+        ed.document.fileName.endsWith('.cbl') ||
+        ed.document.fileName.endsWith('.cob') ||
+        ed.document.fileName.endsWith('.cpy')
       );
 
       if (!ed || !isThzFile) {
         return Promise.resolve([
           new ThzCockpitItem(
-            'Nenhum arquivo .thz ativo',
+            'Nenhum arquivo THZ ou COBOL ativo',
             vscode.TreeItemCollapsibleState.None,
-            'Abra um arquivo .thz para ver o outline',
+            'Abra um arquivo .thz ou .cbl para ver o outline',
             'info',
             undefined,
-            'Abra um arquivo .thz ou escolha um exemplo na Galeria abaixo.'
+            'Abra um arquivo .thz/.cbl ou escolha um exemplo na Galeria abaixo.'
           )
         ]);
       }
@@ -1852,6 +2045,64 @@ export function activate(context: vscode.ExtensionContext): void {
         items.push(new ThzCockpitItem('Interfaces Declarativas (UI)', vscode.TreeItemCollapsibleState.Expanded, `${uiChildren.length} componente(s)`, 'browser', undefined, undefined, uiChildren));
       }
 
+      // Extração de Rotinas e Interop COBOL
+      const cobolChildren: ThzCockpitItem[] = [];
+      for (let i = 0; i < linhas.length; i++) {
+        const l = linhas[i];
+        const numLinha = i + 1;
+        const mCob = l.match(/^\s*BLOCO_COBOL\b/i);
+        if (mCob) {
+          let progId = 'BLOCO_COBOL';
+          for (let j = i + 1; j < Math.min(linhas.length, i + 30); j++) {
+            const mId = linhas[j].match(/^\s*PROGRAM-ID\.\s*([A-Za-z0-9_-]+)/i);
+            if (mId) { progId = mId[1]; break; }
+            if (linhas[j].match(/^\s*FIM_BLOCO_COBOL\b/i)) break;
+          }
+          cobolChildren.push(new ThzCockpitItem(
+            `Rotina: ${progId}`,
+            vscode.TreeItemCollapsibleState.None,
+            'C-ABI / LLVM AOT',
+            'circuit-board',
+            { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] },
+            `Rotina COBOL embutida ${progId} na linha ${numLinha}`
+          ));
+        }
+        const mCpy = l.match(/^\s*IMPORTAR_COPYBOOK\s+"([^"]+)"/i);
+        if (mCpy) {
+          cobolChildren.push(new ThzCockpitItem(
+            `Copybook: ${path.basename(mCpy[1])}`,
+            vscode.TreeItemCollapsibleState.None,
+            'Schema Mainframe',
+            'file-submodule',
+            { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] },
+            `Importação de copybook ${mCpy[1]}`
+          ));
+        }
+        const mCall = l.match(/\bCOBOL\.([A-Za-z0-9_]+)\b/);
+        if (mCall && !l.includes('BLOCO_COBOL')) {
+          cobolChildren.push(new ThzCockpitItem(
+            `Chamada: COBOL.${mCall[1]}()`,
+            vscode.TreeItemCollapsibleState.None,
+            'Invocação C-ABI',
+            'zap',
+            { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }
+          ));
+        }
+        const mStandalone = l.match(/^\s*PROGRAM-ID\.\s*([A-Za-z0-9_-]+)/i);
+        if (mStandalone && !fonte.includes('BLOCO_COBOL')) {
+          cobolChildren.push(new ThzCockpitItem(
+            `Programa: ${mStandalone[1]}`,
+            vscode.TreeItemCollapsibleState.None,
+            'THZ-COBOL Standalone',
+            'terminal',
+            { command: 'thz.gotoLine', title: 'Ir para Linha', arguments: [numLinha, filePath] }
+          ));
+        }
+      }
+      if (cobolChildren.length > 0) {
+        items.push(new ThzCockpitItem('🏛️ Interoperabilidade COBOL & Mainframe', vscode.TreeItemCollapsibleState.Expanded, `${cobolChildren.length} item(ns)`, 'globe', undefined, undefined, cobolChildren));
+      }
+
       return Promise.resolve(items);
     }
   }
@@ -1872,7 +2123,9 @@ export function activate(context: vscode.ExtensionContext): void {
         const cands = [
           path.join(workspaceFolder, 'exemplos', subPath),
           path.join(workspaceFolder, 'thz-lang', 'exemplos', subPath),
-          path.resolve(workspaceFolder, '..', 'thz-lang', 'exemplos', subPath)
+          path.resolve(workspaceFolder, '..', 'thz-lang', 'exemplos', subPath),
+          path.join(workspaceFolder, 'thz-lang-cobol', 'exemplos', subPath),
+          path.resolve(workspaceFolder, '..', 'thz-lang-cobol', 'exemplos', subPath)
         ];
         return cands.find(c => fs.existsSync(c)) || cands[0];
       }
@@ -1885,7 +2138,10 @@ export function activate(context: vscode.ExtensionContext): void {
         { label: 'THZ Studio IDE Declarativo', path: resolverExemplo('thz_studio_ide.thzui'), desc: 'thz_studio_ide.thzui' },
         { label: 'Padrão Result DDD', path: resolverExemplo(path.join('colecao', '07-resultado-ddd.thz')), desc: '07-resultado-ddd.thz' },
         { label: 'Vetorização SIMD (AVX2/512)', path: resolverExemplo(path.join('colecao', '08-vetorizado-simd.thz')), desc: '08-vetorizado-simd.thz' },
-        { label: 'Idempotência em Larga Escala', path: resolverExemplo(path.join('colecao', '11-idempotencia-larga-escala.thz')), desc: '11-idempotencia-larga-escala.thz' }
+        { label: 'Idempotência em Larga Escala', path: resolverExemplo(path.join('colecao', '11-idempotencia-larga-escala.thz')), desc: '11-idempotencia-larga-escala.thz' },
+        { label: 'COBOL Interop C-ABI (LLVM AOT)', path: resolverExemplo(path.join('thz_com_cobol', 'demo_cobol_interop.thz')), desc: 'demo_cobol_interop.thz' },
+        { label: 'THZ-COBOL Standalone Puro', path: resolverExemplo(path.join('programas_puros', 'FOLHA_PAGAMENTO_STANDALONE.cbl')), desc: 'FOLHA_PAGAMENTO_STANDALONE.cbl' },
+        { label: 'Copybook Mainframe (.cpy)', path: resolverExemplo(path.join('copybooks', 'CLIENTE_BANCO.cpy')), desc: 'CLIENTE_BANCO.cpy' }
       ];
 
       const items = exemplosDefinidos.map(ex => {
@@ -1924,6 +2180,7 @@ export function activate(context: vscode.ExtensionContext): void {
         new ThzCockpitItem('Versão do Engine', vscode.TreeItemCollapsibleState.None, 'THZ-LANG 0.5.0', 'tag'),
         new ThzCockpitItem('Language Server (LSP)', vscode.TreeItemCollapsibleState.None, client ? 'Conectado (Java 25)' : 'Inativo', 'server-process'),
         new ThzCockpitItem('Backend de Compilação', vscode.TreeItemCollapsibleState.None, 'LLVM Clang AOT / GraalVM', 'zap'),
+        new ThzCockpitItem('Interoperabilidade Legada', vscode.TreeItemCollapsibleState.None, 'COBOL (C-ABI / Panama FFM / LLVM IR)', 'globe'),
         new ThzCockpitItem('Gerenciamento de Memória', vscode.TreeItemCollapsibleState.None, 'Arena Contígua O(1) (ISO TR 24772)', 'layers'),
         new ThzCockpitItem('Aritmética Decimais', vscode.TreeItemCollapsibleState.None, 'ISO/IEC 10967 (DecimalFixo Half-Even)', 'shield'),
         new ThzCockpitItem(
