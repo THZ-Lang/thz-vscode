@@ -2123,13 +2123,14 @@ export function activate(context: vscode.ExtensionContext): void {
         return Promise.resolve([new ThzCockpitItem('Nenhum workspace aberto', vscode.TreeItemCollapsibleState.None)]);
       }
 
+      const rootWs = workspaceFolder;
       function resolverExemplo(subPath: string): string {
         const cands = [
-          path.join(workspaceFolder, 'exemplos', subPath),
-          path.join(workspaceFolder, 'thz-lang', 'exemplos', subPath),
-          path.resolve(workspaceFolder, '..', 'thz-lang', 'exemplos', subPath),
-          path.join(workspaceFolder, 'thz-lang-cobol', 'exemplos', subPath),
-          path.resolve(workspaceFolder, '..', 'thz-lang-cobol', 'exemplos', subPath)
+          path.join(rootWs, 'exemplos', subPath),
+          path.join(rootWs, 'thz-lang', 'exemplos', subPath),
+          path.resolve(rootWs, '..', 'thz-lang', 'exemplos', subPath),
+          path.join(rootWs, 'thz-lang-cobol', 'exemplos', subPath),
+          path.resolve(rootWs, '..', 'thz-lang-cobol', 'exemplos', subPath)
         ];
         return cands.find(c => fs.existsSync(c)) || cands[0];
       }
