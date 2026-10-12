@@ -38,9 +38,11 @@ export function activate(context: vscode.ExtensionContext): void {
     if (fs.existsSync(dir)) {
       try {
         const files = fs.readdirSync(dir);
-        const jarFound = files.find(f => f.startsWith('thz-lsp') && f.endsWith('.jar') && !f.includes('-sources'));
-        if (jarFound) {
-          candidatos.push(path.join(dir, jarFound));
+        const lspJars = files
+          .filter(f => f.startsWith('thz-lsp') && f.endsWith('.jar') && !f.includes('-sources'))
+          .sort((a, b) => (a === 'thz-lsp.jar' ? -1 : b === 'thz-lsp.jar' ? 1 : b.localeCompare(a)));
+        if (lspJars.length > 0) {
+          candidatos.push(path.join(dir, lspJars[0]));
         }
       } catch (ignored) {}
     }
@@ -146,9 +148,11 @@ export function activate(context: vscode.ExtensionContext): void {
         if (fs.existsSync(dir)) {
           try {
             const files = fs.readdirSync(dir);
-            const achado = files.find(f => (f.startsWith('thz-jvm') || f.startsWith('thz-cli')) && f.endsWith('.jar') && !f.includes('-sources'));
-            if (achado) {
-              foundCliJar = path.join(dir, achado);
+            const cliJars = files
+              .filter(f => (f.startsWith('thz-jvm') || f.startsWith('thz-cli')) && f.endsWith('.jar') && !f.includes('-sources'))
+              .sort((a, b) => (a === 'thz-jvm.jar' ? -1 : b === 'thz-jvm.jar' ? 1 : b.localeCompare(a)));
+            if (cliJars.length > 0) {
+              foundCliJar = path.join(dir, cliJars[0]);
               break;
             }
           } catch (ignored) {}
