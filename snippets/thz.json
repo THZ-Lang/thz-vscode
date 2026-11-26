@@ -168,5 +168,54 @@
       "FIM_BIBLIOTECA"
     ],
     "description": "Cria um módulo de biblioteca compartilhada em THZ-LANG."
+  },
+  "Bloco COBOL Embutido": {
+    "prefix": "thz-cobol-bloco",
+    "body": [
+      "BLOCO_COBOL",
+      "    IDENTIFICATION DIVISION.",
+      "    PROGRAM-ID. ${1:CALC-ROTINA}.",
+      "    DATA DIVISION.",
+      "    LINKAGE SECTION.",
+      "    01 ${2:LK-ENTRADA}     PIC ${3:S9(11)V99 COMP-3}.",
+      "    01 ${4:LK-SAIDA}       PIC ${5:S9(7)V99 COMP-3}.",
+      "    PROCEDURE DIVISION USING ${2:LK-ENTRADA} ${4:LK-SAIDA}.",
+      "        $0",
+      "        GOBACK.",
+      "FIM_BLOCO_COBOL"
+    ],
+    "description": "Embutir bloco de código COBOL legado compilável nativamente via C-ABI / LLVM AOT."
+  },
+  "Importar Copybook COBOL": {
+    "prefix": "thz-cobol-copybook",
+    "body": [
+      "IMPORTAR_COPYBOOK \"${1:caminho/para/ARQUIVO.CPY}\""
+    ],
+    "description": "Importa um Copybook COBOL (.cpy) convertendo schemas de mainframe em estruturas nativas."
+  },
+  "Invocação de Rotina COBOL": {
+    "prefix": "thz-cobol-call",
+    "body": [
+      "COBOL.${1:NOME_ROTINA}(${2:argumentos})"
+    ],
+    "description": "Invocação de rotina COBOL compilada nativamente via C-ABI zero-copy."
+  },
+  "Programa COBOL Standalone Puro": {
+    "prefix": "thz-cobol-standalone",
+    "body": [
+      "       IDENTIFICATION DIVISION.",
+      "       PROGRAM-ID. ${1:PROGRAMA-STANDALONE}.",
+      "       ENVIRONMENT DIVISION.",
+      "       DATA DIVISION.",
+      "       WORKING-STORAGE SECTION.",
+      "       01  ${2:DADOS-PROCESSAMENTO}.",
+      "           05  ${3:CAMPO-VALOR}    PIC ${4:S9(9)V99 COMP-3}.",
+      "           05  ${5:CAMPO-TEXTO}    PIC ${6:X(30)}.",
+      "       PROCEDURE DIVISION.",
+      "       PROCESSAR.",
+      "           $0",
+      "           GOBACK."
+    ],
+    "description": "Programa COBOL 100% puro para execução e compilação direta sob o runtime THZ."
   }
 }

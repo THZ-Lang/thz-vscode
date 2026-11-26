@@ -37,6 +37,20 @@
           ".thzui"
         ],
         "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "thz-cobol",
+        "aliases": [
+          "THZ-COBOL",
+          "COBOL",
+          "cobol"
+        ],
+        "extensions": [
+          ".cbl",
+          ".cob",
+          ".cpy"
+        ],
+        "configuration": "./language-configuration.json"
       }
     ],
     "configurationDefaults": {
@@ -48,6 +62,11 @@
         "editor.formatOnSave": true,
         "editor.formatOnPaste": true,
         "editor.defaultFormatter": "thz-lang.thz-lang"
+      },
+      "[thz-cobol]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 4,
+        "editor.detectIndentation": false
       }
     },
     "grammars": [
@@ -55,11 +74,20 @@
         "language": "thz",
         "scopeName": "source.thz",
         "path": "./syntaxes/thz.tmLanguage.json"
+      },
+      {
+        "language": "thz-cobol",
+        "scopeName": "source.cobol",
+        "path": "./syntaxes/cobol.tmLanguage.json"
       }
     ],
     "snippets": [
       {
         "language": "thz",
+        "path": "./snippets/thz.json"
+      },
+      {
+        "language": "thz-cobol",
         "path": "./snippets/thz.json"
       }
     ],

@@ -23,8 +23,8 @@
     ["[", "]"]
   ],
   "indentationRules": {
-    "increaseIndentPattern": "^\\s*(?:programa|biblioteca|extensao|pipeline_dados|ferramenta|teste|tela|metadados(?:_arquitetura)?|estrutura|enumeracao|regra(?:_negocio)?|funcao|função|operacao|op|procedimento|proc|fn|se|senao|senão|enquanto|para|tente|capture|escolha|caso|usar_bloco_memoria|vetorizar_para)\\b.*:\\s*(?:#.*)?$",
-    "decreaseIndentPattern": "^\\s*(?:senao|senão|capture|else|catch)\\b.*:\\s*(?:#.*)?$"
+    "increaseIndentPattern": "^\\s*(?:programa|biblioteca|extensao|pipeline_dados|ferramenta|teste|tela|metadados(?:_arquitetura)?|estrutura|enumeracao|regra(?:_negocio)?|funcao|função|operacao|op|procedimento|proc|fn|se|senao|senão|enquanto|para|tente|capture|escolha|caso|usar_bloco_memoria|vetorizar_para|bloco_cobol)\\b.*(?::)?\\s*(?:#.*)?$",
+    "decreaseIndentPattern": "^\\s*(?:senao|senão|capture|else|catch|fim_bloco_cobol)\\b.*(?::)?\\s*(?:#.*)?$"
   },
   "onEnterRules": [
     {

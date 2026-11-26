@@ -6,6 +6,7 @@
     { "include": "#comments" },
     { "include": "#strings" },
     { "include": "#numbers" },
+    { "include": "#cobol-embedded" },
     { "include": "#named-declarations" },
     { "include": "#typed-properties" },
     { "include": "#inferred-assignments" },
@@ -171,7 +172,7 @@
       "patterns": [
         {
           "name": "keyword.control.declaration.thz",
-          "match": "(?i)\\b(programa|visual|negocio|arquitetura|biblioteca|extensao|ferramenta|teste|tela|fim_programa|fim_biblioteca|fim_extensao|fim_ferramenta|fim_teste|fim_tela|metadados_arquitetura|fim_metadados|metadados|estrutura|fim_estrutura|struct|enumeracao|fim_enumeracao|enum|regra_negocio|fim_regra_negocio|regra|rule|procedimento|proc|funcao|fim_funcao|fn|func|operacao|fim_operacao|op|variavel|var|val|let|const|importar|versao_linguagem|criar|new|idempotente)\\b"
+          "match": "(?i)\\b(programa|visual|negocio|arquitetura|biblioteca|extensao|ferramenta|teste|tela|fim_programa|fim_biblioteca|fim_extensao|fim_ferramenta|fim_teste|fim_tela|metadados_arquitetura|fim_metadados|metadados|estrutura|fim_estrutura|struct|enumeracao|fim_enumeracao|enum|regra_negocio|fim_regra_negocio|regra|rule|procedimento|proc|funcao|fim_funcao|fn|func|operacao|fim_operacao|op|variavel|var|val|let|const|importar|versao_linguagem|criar|new|idempotente|bloco_cobol|fim_bloco_cobol|importar_copybook)\\b"
         }
       ]
     },
@@ -195,7 +196,7 @@
       "patterns": [
         {
           "name": "support.class.thz",
-          "match": "(?i)\\b(texto|matematica|data|tela|gui|console|thzio|thzconfig|thzsecurity|thzlog|thzhttpserver|documento|thzuimaker)\\b"
+          "match": "(?i)\\b(texto|matematica|data|tela|gui|console|thzio|thzconfig|thzsecurity|thzlog|thzhttpserver|documento|thzuimaker|cobol)\\b"
         },
         {
           "name": "support.function.thz",
@@ -264,6 +265,98 @@
         {
           "name": "punctuation.bracket.thz",
           "match": "(\\(|\\)|\\[|\\]|\\{|\\})"
+        }
+      ]
+    },
+    "cobol-embedded": {
+      "begin": "(?i)^\\s*(BLOCO_COBOL)\\b",
+      "beginCaptures": {
+        "1": { "name": "keyword.control.declaration.cobol.thz" }
+      },
+      "end": "(?i)^\\s*(FIM_BLOCO_COBOL)\\b",
+      "endCaptures": {
+        "1": { "name": "keyword.control.declaration.cobol.thz" }
+      },
+      "patterns": [
+        { "include": "source.cobol" },
+        { "include": "#cobol-internal-grammar" }
+      ]
+    },
+    "cobol-internal-grammar": {
+      "patterns": [
+        {
+          "name": "comment.line.cobol",
+          "match": "^\\s*(\\*[^\r\n]*|#.*$|//.*$)"
+        },
+        {
+          "name": "string.quoted.double.cobol",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [{ "name": "constant.character.escape.cobol", "match": "\\\\." }]
+        },
+        {
+          "name": "string.quoted.single.cobol",
+          "begin": "'",
+          "end": "'",
+          "patterns": [{ "name": "constant.character.escape.cobol", "match": "\\\\." }]
+        },
+        {
+          "name": "keyword.control.division.cobol",
+          "match": "(?i)\\b(IDENTIFICATION|ENVIRONMENT|DATA|PROCEDURE)\\s+DIVISION\\b"
+        },
+        {
+          "name": "keyword.control.section.cobol",
+          "match": "(?i)\\b(WORKING-STORAGE|LINKAGE|FILE|LOCAL-STORAGE|SCREEN|CONFIGURATION|INPUT-OUTPUT)\\s+SECTION\\b"
+        },
+        {
+          "match": "(?i)\\b(PROGRAM-ID|AUTHOR|INSTALLATION|DATE-WRITTEN|DATE-COMPILED)\\s*\\.\\s*([A-Za-z0-9_-]+)?",
+          "captures": {
+            "1": { "name": "keyword.control.cobol" },
+            "2": { "name": "entity.name.function.cobol" }
+          }
+        },
+        {
+          "name": "keyword.control.cobol",
+          "match": "(?i)\\b(MOVE|TO|PERFORM|THRU|THROUGH|VARYING|FROM|UNTIL|BY|COMPUTE|ADD|SUBTRACT|MULTIPLY|DIVIDE|IF|THEN|ELSE|END-IF|END-PERFORM|END-COMPUTE|END-EVALUATE|END-READ|END-WRITE|GOBACK|STOP\\s+RUN|DISPLAY|ACCEPT|CALL|USING|EXIT|STOP|INITIALIZE|STRING|UNSTRING|OPEN|CLOSE|READ|WRITE|REWRITE|DELETE|INSPECT|SEARCH|WHEN|EVALUATE)\\b"
+        },
+        {
+          "name": "variable.other.level.cobol",
+          "match": "\\b(0[1-9]|[1-4][0-9]|50|66|77|88)\\b"
+        },
+        {
+          "match": "(?i)\\b(PIC(?:TURE)?(?:\\s+IS)?)\\s+([A-Za-z0-9()VvSs$.,-]+)",
+          "captures": {
+            "1": { "name": "keyword.type.cobol" },
+            "2": { "name": "storage.type.cobol" }
+          }
+        },
+        {
+          "name": "storage.modifier.cobol",
+          "match": "(?i)\\b(COMP|COMP-1|COMP-2|COMP-3|COMP-4|COMP-5|COMPUTATIONAL(?:-[1-5])?|BINARY|PACKED-DECIMAL|DISPLAY|INDEX|POINTER)\\b"
+        },
+        {
+          "name": "keyword.other.cobol",
+          "match": "(?i)\\b(VALUE(?:S)?(?:\\s+(?:IS|ARE))?|OCCURS|TIMES|INDEXED\\s+BY|REDEFINES|RENAMES|JUSTIFIED|SYNCHRONIZED|BLANK\\s+WHEN\\s+ZERO)\\b"
+        },
+        {
+          "name": "constant.language.cobol",
+          "match": "(?i)\\b(SPACES?|ZEROS?|ZEROES?|HIGH-VALUES?|LOW-VALUES?|QUOTES?|NULLS?)\\b"
+        },
+        {
+          "name": "constant.numeric.decimal.cobol",
+          "match": "\\b\\d[\\d_]*\\.\\d[\\d_]*\\b"
+        },
+        {
+          "name": "constant.numeric.integer.cobol",
+          "match": "\\b\\d[\\d_]*\\b"
+        },
+        {
+          "name": "keyword.operator.cobol",
+          "match": "(\\+|-|\\*|/|\\*\\*|=|<|>|<=|>=|<>|(?i)\\b(NOT|AND|OR)\\b)"
+        },
+        {
+          "name": "punctuation.separator.cobol",
+          "match": "(\\.|,|;)"
         }
       ]
     }
